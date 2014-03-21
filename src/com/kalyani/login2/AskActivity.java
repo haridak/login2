@@ -32,6 +32,8 @@ import com.facebook.widget.FacebookDialog;
 //import com.facebook.samples.friendpicker.PickFriendsActivity;
 //import com.facebook.samples.friendpicker.R;
 
+// adding a link to check checking on 3/21
+
 public class AskActivity extends Activity  {
 //
 //	@Override
