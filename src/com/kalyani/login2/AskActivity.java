@@ -70,9 +70,8 @@ public class AskActivity extends Activity  {
 	private TextView resultsTextView;
 	private EditText text;
 	private GraphUser user;
-	private List<String> tags;
-	//= Arrays.asList("100008034453600", "");
-	private ArrayList<String> ids = new ArrayList<String>();
+	private List<String> tags = new ArrayList<String>();
+	
 	private GraphUser user2;
 	private static final int REAUTH_ACTIVITY_CODE = 100;
 	private boolean pendingAnnounce;
@@ -89,9 +88,8 @@ public class AskActivity extends Activity  {
 			"email",
 			"read_stream",
 			"user_location",
-			"friends_location");
+			"friends_location"); 
 
-	 
 	String place ="111856692159256";
 	GraphPlace gp =null;
 	String message;
@@ -142,7 +140,7 @@ public class AskActivity extends Activity  {
 			Log.i("TAG", "session != null");
 			//session.openForPublish(new Session.OpenRequest(this).setPermissions(ALL_PERMISSIONS));
 			Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(this, string)
-			.setDefaultAudience(SessionDefaultAudience.FRIENDS)
+			.setDefaultAudience(SessionDefaultAudience.ONLY_ME)
 			.setRequestCode(REAUTH_ACTIVITY_CODE);
 			session.requestNewPublishPermissions(newPermissionsRequest);
 		
@@ -156,7 +154,7 @@ public class AskActivity extends Activity  {
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		//List<String> tags = new ArrayList<String>();
+		List<String> tags = new ArrayList<String>();
 		//tags.add("1035192085");
 		makeMeRequest(Session.getActiveSession());
 		super.onCreate(savedInstanceState);
@@ -271,39 +269,24 @@ public class AskActivity extends Activity  {
 		
 		Log.i("TAG","in displaySelectedFriends");
 		String results = "";
-		ArrayList<String> tags2;
 		FriendPickerApplication application = (FriendPickerApplication) getApplication();
 		Collection<GraphUser> selection = application.getSelectedUsers();
-		if (selection != null && selection.size() > 0) {
+		Collection<GraphUser> selection2 = selection;
+		if (selection2 != null && selection2.size() > 0) {
 			ArrayList<String> names = new ArrayList<String>();
-			//ArrayList<String> tags = new ArrayList<String>();
-			for (GraphUser user : selection) {
-				//names.add(user.getName());
+			for (GraphUser user : selection2) {
+				names.add(user.getName());
 				tags.add(user.getId());
 				
 			}
-			//tags2 = TextUtils.join(", ", tags);
-			
-			//tags = results;
+			results = TextUtils.join(", ", names);
+		
 		} else {
 			results = "Choose friends and enter your question here";
 		}
 		text.setText(results);
 	}
 
-	private void getfriendsids(int resultCode) {
-		Log.i("TAG","in getfriendsids");
-		FriendPickerApplication application = (FriendPickerApplication) getApplication();
-		Collection<GraphUser> selection = application.getSelectedUsers();
-		if (selection != null && selection.size() > 0) {
-			for (GraphUser user : selection) {
-				ids.add(user.getId());
-				Log.i(""+ids, "");
-			}
-		//tags.addAll(ids);
-	}
-		return;
-	}
 	private void onClickPickFriends() {
 		startPickFriendsActivity();
 	}
