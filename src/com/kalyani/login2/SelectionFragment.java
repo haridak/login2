@@ -3,6 +3,7 @@ package com.kalyani.login2;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,6 +18,7 @@ public class SelectionFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, 
 	        ViewGroup container, Bundle savedInstanceState) {
 	    super.onCreateView(inflater, container, savedInstanceState);
+	    Log.i("TAG", "In onCreateView");
 	    View view = inflater.inflate(R.layout.selection, 
 	            container, false);
 	    Button searchButton =(Button) view.findViewById(R.id.button2);
@@ -26,8 +28,10 @@ public class SelectionFragment extends Fragment {
             @Override
             public void onClick(View v)
             {
+            	Log.i("TAG", "In onClick of search button");
             	Intent intent = new Intent(v.getContext(),SearchActivity.class);
             	startActivityForResult(intent,0);
+            	Log.i("TAG", "In startActivityForResult of search button");
             	
             	//Toast.makeText(getActivity(), "clicked search button",Toast.LENGTH_SHORT).show();
             } 
@@ -37,8 +41,10 @@ public class SelectionFragment extends Fragment {
             @Override
             public void onClick(View v)
             {
+            	Log.i("TAG", "In onClick of ask button");
             	Intent intent = new Intent(v.getContext(),AskActivity.class);
             	startActivityForResult(intent,0);
+            	Log.i("TAG", "In startActivityForResult of ask button");
             } 
   }); 
 	    return view;

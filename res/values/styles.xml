@@ -16,5 +16,117 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
+<style name="EditTextcustom_theme1" parent="android:Widget.EditText">
+	  <item name="android:background">@drawable/custom_theme1_edit_text_holo_dark</item>
+	  <item name="android:textColor">#ffffff</item>
+  </style>
 
+  <style name="AutoCompleteTextViewcustom_theme1" parent="android:Widget.AutoCompleteTextView">
+      <item name="android:dropDownSelector">@drawable/custom_theme1_list_selector_holo_dark</item>
+	  <item name="android:background">@drawable/custom_theme1_edit_text_holo_dark</item>
+	  <item name="android:textColor">#ffffff</item>
+  </style>
+
+  <style name="CheckBoxcustom_theme1" parent="android:Widget.CompoundButton.CheckBox">
+      <item name="android:button">@drawable/custom_theme1_btn_check_holo_dark</item>
+  </style>
+
+  <style name="RadioButtoncustom_theme1" parent="android:Widget.CompoundButton.RadioButton">
+      <item name="android:button">@drawable/custom_theme1_btn_radio_holo_dark</item>
+  </style>
+
+  <style name="Buttoncustom_theme1" parent="android:Widget.Button">
+	  <item name="android:background">@drawable/custom_theme1_btn_default_holo_dark</item>
+	  <item name="android:minHeight">48dip</item>
+	  <item name="android:minWidth">64dip</item>
+	  <item name="android:textColor">#ffffff</item>
+  </style>
+
+  <style name="ImageButtoncustom_theme1" parent="android:Widget.ImageButton">
+	  <item name="android:background">@drawable/custom_theme1_btn_default_holo_dark</item>
+  </style>
+
+  <style name="Spinnercustom_theme1" parent="android:Widget.Spinner">
+      <item name="android:background">@drawable/custom_theme1_spinner_background_holo_dark</item>
+      <item name="android:dropDownSelector">@drawable/custom_theme1_list_selector_holo_dark</item>
+  </style>
+
+  <style name="SpinnerDropDownItemcustom_theme1" parent="android:Widget.DropDownItem.Spinner">
+      <item name="android:checkMark">@drawable/custom_theme1_btn_radio_holo_dark</item>
+  </style>
+  <style name="Tabcustom_theme1">
+      <item name="android:gravity">center_horizontal</item>
+      <item name="android:paddingLeft">16dip</item>
+      <item name="android:paddingRight">16dip</item>
+      <item name="android:background">@drawable/custom_theme1_tab_indicator_holo</item>
+      <item name="android:layout_width">0dip</item>
+      <item name="android:layout_weight">1</item>
+      <item name="android:minWidth">80dip</item>
+  </style>
+
+  <style name="TabTextcustom_theme1">
+	  <item name="android:textColor">#ffffff</item>
+      <item name="android:textSize">12sp</item>
+      <item name="android:textStyle">bold</item>
+      <!-- v14 <item name="android:textAllCaps">true</item> -->
+      <item name="android:ellipsize">marquee</item>
+      <item name="android:maxLines">2</item>
+      <item name="android:maxWidth">180dip</item>
+  </style>
+
+  <style name="ProgressBarcustom_theme1" parent="android:Widget.ProgressBar.Horizontal">
+      <item name="android:progressDrawable">@drawable/custom_theme1_progress_horizontal_holo_dark</item>
+      <item name="android:indeterminateDrawable">@drawable/custom_theme1_progress_indeterminate_horizontal_holo_dark</item>
+      <item name="android:minHeight">16dip</item>
+      <item name="android:maxHeight">16dip</item>
+  </style>
+
+  <style name="SeekBarcustom_theme1" parent="android:Widget.SeekBar">
+      <item name="android:progressDrawable">@drawable/custom_theme1_scrubber_progress_horizontal_holo_dark</item>
+      <item name="android:indeterminateDrawable">@drawable/custom_theme1_scrubber_progress_horizontal_holo_dark</item>
+      <item name="android:minHeight">13dip</item>
+      <item name="android:maxHeight">13dip</item>
+      <item name="android:thumb">@drawable/custom_theme1_scrubber_control_selector_holo_dark</item>
+      <item name="android:thumbOffset">16dip</item>
+      <item name="android:paddingLeft">16dip</item>
+      <item name="android:paddingRight">16dip</item>
+  </style>
+
+  <style name="RatingBarcustom_theme1" parent="android:Widget.RatingBar">
+      <item name="android:progressDrawable">@drawable/custom_theme1_ratingbar_full_holo_dark</item>
+      <item name="android:indeterminateDrawable">@drawable/custom_theme1_ratingbar_full_holo_dark</item>
+  </style>
+
+  <style name="RatingBarBigcustom_theme1">
+      <item name="android:progressDrawable">@drawable/custom_theme1_ratingbar_holo_dark</item>
+      <item name="android:indeterminateDrawable">@drawable/custom_theme1_ratingbar_holo_dark</item>
+      <item name="android:minHeight">35dip</item>
+      <item name="android:maxHeight">35dip</item>
+  </style>
+
+  <style name="RatingBarSmallcustom_theme1">
+      <item name="android:progressDrawable">@drawable/custom_theme1_ratingbar_small_holo_dark</item>
+      <item name="android:indeterminateDrawable">@drawable/custom_theme1_ratingbar_small_holo_dark</item>
+      <item name="android:minHeight">16dip</item>
+      <item name="android:maxHeight">16dip</item>
+  </style>
+
+  <style name="Togglecustom_theme1" parent="android:Widget.Button.Toggle">
+      <item name="android:background">@drawable/custom_theme1_btn_toggle_holo_dark</item>
+      <item name="android:minHeight">48dip</item>
+	  <item name="android:textColor">#ffffff</item>
+  </style>
+
+  <style name="ListViewcustom_theme1" parent="android:Widget.ListView">
+      <item name="android:listSelector">@drawable/custom_theme1_list_selector_holo_dark</item>
+  </style>
+
+  <style name="ListViewcustom_theme1.White" parent="android:Widget.ListView.White">
+      <item name="android:listSelector">@drawable/custom_theme1_list_selector_holo_dark</item>
+  </style>
+
+  <style name="SpinnerItemcustom_theme1" parent="android:TextAppearance.Widget.TextView.SpinnerItem">
+      <item name="android:textColor">#ffffff</item>
+  </style>
+    
 </resources>

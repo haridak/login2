@@ -1,20 +1,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-        >
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Write your question here"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    tools:ignore="HardcodedText" >
 
     <EditText
         android:id="@+id/editText1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="0.07"
         android:ems="10"
         android:inputType="textMultiLine" />
 
@@ -26,14 +21,43 @@
 
     <Button
         android:id="@+id/pickFriendsButton"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Pick Friends" />
+        android:text="Choose Friends" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="OR" />
+
+    <Button
+        android:id="@+id/friendsloc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose Friend's Location" />
+
+    
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.72" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+        </LinearLayout>
+    </ScrollView>
 
     <Button
         android:id="@+id/buttonPost"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Post to Wall" />
+        android:text="Ask Question" />
 
 </LinearLayout>

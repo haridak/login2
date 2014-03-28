@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Generated with http://android-holo-colors.com -->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <style name="custom_theme1" parent="android:Theme.Holo.Light">
+
+    <item name="android:editTextBackground">@drawable/custom_theme1_edit_text_holo_dark</item>
+
+    <item name="android:textColorHighlight">#990099cc</item>
+    <item name="android:textSelectHandleLeft">@drawable/custom_theme1_text_select_handle_left</item>
+    <item name="android:textSelectHandleRight">@drawable/custom_theme1_text_select_handle_right</item>
+    <item name="android:textSelectHandle">@drawable/custom_theme1_text_select_handle_middle</item>
+
+    <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewcustom_theme1</item>
+
+    <item name="android:listChoiceIndicatorMultiple">@drawable/custom_theme1_btn_check_holo_dark</item>
+
+    <item name="android:listChoiceIndicatorSingle">@drawable/custom_theme1_btn_radio_holo_dark</item>
+
+    <item name="android:buttonStyle">@style/Buttoncustom_theme1</item>
+
+    <item name="android:imageButtonStyle">@style/ImageButtoncustom_theme1</item>
+
+    <item name="android:dropDownSpinnerStyle">@style/Spinnercustom_theme1</item>
+
+    <item name="android:progressBarStyleHorizontal">@style/ProgressBarcustom_theme1</item>
+
+    <item name="android:seekBarStyle">@style/SeekBarcustom_theme1</item>
+
+    <item name="android:ratingBarStyle">@style/RatingBarcustom_theme1</item>
+
+    <item name="android:ratingBarStyleIndicator">@style/RatingBarBigcustom_theme1</item>
+
+    <item name="android:ratingBarStyleSmall">@style/RatingBarSmallcustom_theme1</item>
+
+    <item name="android:buttonStyleToggle">@style/Togglecustom_theme1</item>
+
+    <item name="android:listChoiceBackgroundIndicator">@drawable/custom_theme1_list_selector_holo_dark</item>
+
+    <item name="android:activatedBackgroundIndicator">@drawable/custom_theme1_activated_background_holo_dark</item>
+
+    <item name="android:fastScrollThumbDrawable">@drawable/custom_theme1_fastscroll_thumb_holo</item>
+
+  </style>
+
+</resources>
