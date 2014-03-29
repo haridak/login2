@@ -1,9 +1,16 @@
 package com.kalyani.login2;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -12,9 +19,12 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +39,7 @@ import com.facebook.SessionDefaultAudience;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.android.Facebook;
+import com.facebook.model.GraphLocation;
 import com.facebook.model.GraphMultiResult;
 import com.facebook.model.GraphObject;
 import com.facebook.model.GraphObjectList;
@@ -66,12 +77,13 @@ public class AskActivity extends Activity  {
 		};
 	};
   	private static final int PICK_FRIENDS_ACTIVITY = 1;
+  	
 	private Button pickFriendsButton;
 	private TextView resultsTextView;
 	private EditText text;
 	private GraphUser user;
 	private List<String> tags = new ArrayList<String>();
-	
+	private List<String> locids = new ArrayList<String>();
 	private GraphUser user2;
 	private static final int REAUTH_ACTIVITY_CODE = 100;
 	private boolean pendingAnnounce;
@@ -83,7 +95,7 @@ public class AskActivity extends Activity  {
 	private static final String PERMISSION2 = "friends_location";
 	public static final List<String> ALL_PERMISSIONS = Arrays.asList(       
 			"read_friendlists",
-			"publish_stream",
+		//	"publish_stream",
 			"offline_access",
 			"email",
 			"read_stream",
@@ -93,6 +105,8 @@ public class AskActivity extends Activity  {
 	String place ="111856692159256";
 	GraphPlace gp =null;
 	String message;
+	ListView listView1;
+	ArrayAdapter arrayAdapter;
 	private enum PendingAction {
 		NONE,
 		POST_PHOTO,
@@ -154,7 +168,7 @@ public class AskActivity extends Activity  {
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		List<String> tags = new ArrayList<String>();
+	//	List<String> tags = new ArrayList<String>();
 		//tags.add("1035192085");
 		makeMeRequest(Session.getActiveSession());
 		super.onCreate(savedInstanceState);
@@ -162,19 +176,31 @@ public class AskActivity extends Activity  {
 		//Button loginButton = (Button)findViewById(R.id.login_button);
 		
 		text = (EditText) findViewById(R.id.editText1);
-		//ListView listView1 = (ListView) findViewById(R.id.listView1);
+		listView1 = (ListView)findViewById(R.id.listView2);
 		resultsTextView = (TextView) findViewById(R.id.resultsTextView);
 		Button friendsloc =(Button) findViewById(R.id.friendsloc);
 		friendsloc.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
-				requestPublishPermissions(Session.getActiveSession(),PERMISSION2);
-				getLocation();
-			}
-		});
+			    @Override
+			    public void onClick(View v) {
+			        String fqlQuery = "SELECT current_location FROM user WHERE uid IN " +
+			                "(SELECT uid2 FROM friend WHERE uid1 = me())";
+			        Bundle params = new Bundle();
+			        params.putString("q", fqlQuery);
+			        Session session = Session.getActiveSession();
+			        Request request = new Request(session,
+			            "/fql",                         
+			            params,                         
+			            HttpMethod.GET,                 
+			            new Request.Callback(){         
+			                public void onCompleted(Response response) {
+			                    Log.i("TAG", "Result: " + response.toString());
+			                    parseUserFromFQLResponse(response);
+			                }                  
+			        }); 
+			        Request.executeBatchAsync(request);                 
+			    }
+			});
+		
 		
 		Button post  = (Button) findViewById(R.id.buttonPost);
 		post.setOnClickListener(new View.OnClickListener() {
@@ -330,10 +356,14 @@ public class AskActivity extends Activity  {
 //		                        Log.d("AL",""+users.get(i).toString());
 //		                       // welcome.setText("Done");
 //		                    }
-		                    for(int i=0;i<users.size();i++)
-		                    		{
-		                    Log.d("AL",""+users.get(i).toString());
-		                    		}
+		                	List<GraphUser> users2 = users;
+		            		if (users2 != null && users2.size() > 0) {
+		            		//	ArrayList<String> names = new ArrayList<String>();
+		            			for (GraphUser user : users2) {
+		            				//names.add(user.getName());
+		            				locids.add(user.getLocation().toString());
+		                }
+		            		}
 		                }
 		            });
 		        }
@@ -347,24 +377,26 @@ public class AskActivity extends Activity  {
 	private void getLocation() {
 	    Request myFriendsRequest = Request.newMyFriendsRequest(Session.getActiveSession(), 
 	            new Request.GraphUserListCallback() {
-
-	        @SuppressWarnings("unused")
 			@Override
 	        public void onCompleted(List<GraphUser> users, Response response) {
 	            if (response.getError() == null) {
+	            	
+	            Log.i("oncompleted_getlocation", " in if response is not null");
 	            	List<GraphUser> friends = showFriendsandLocation(users, response);
-	            	 for (int i=0;i<friends.size();i++){
-	            		 GraphUser user1 = friends.get(i);
+	            	            		 
+	            		 for (GraphUser u1: friends)
+	            		 {
+	            		  GraphLocation loc = u1.getLocation();
 	                    	//String Location = user.getLocation().toString();
-	                        Log.d("AL",""+users.get(i).toString());
+	                        Log.d("frnd_loc_id",""+loc);
 	                       // welcome.setText("Done");
 	                    }
 	            	//listView1.
 	            	//Toast.makeText(getApplicationContext(), (CharSequence) friends, Toast.LENGTH_SHORT).show();
 	            	
-	            }
 
-	        }
+	            }
+			}
 
 	    });
 	    // Add location to the list of info to get.
@@ -514,6 +546,7 @@ public class AskActivity extends Activity  {
 		Log.i("TAG", "In showPublishResult");
 		String title = null;
 		String alertMessage = null;
+		text.setText("");
 		if (error == null) {
 			title = getString(R.string.success);
 			String id = result.cast(GraphObjectWithId.class).getId();
@@ -532,6 +565,58 @@ public class AskActivity extends Activity  {
 	private interface GraphObjectWithId extends GraphObject {
 		String getId();
 	}
-	
 		
+	public final void parseUserFromFQLResponse( Response response )
+	{
+		JSONObject fbInfo = new JSONObject();
+		ArrayList<String> stringArrayList = new ArrayList<String>();
+		JSONArray current_location = new JSONArray();
+	    try
+	    {
+	        GraphObject go  = response.getGraphObject();
+	        JSONObject  jso = go.getInnerJSONObject();
+	        JSONArray   arr = jso.getJSONArray( "data" );
+	       for(int i = 0;i < arr.length(); i++){
+             // Log.e("jksdhkvjsdlvm", "inside 1st for loop");
+                
+                		if((arr.getJSONObject(i).isNull("current_location")))
+                				{
+                			Log.i("tag","value is null");
+                				}
+                		else
+                		{
+                		 fbInfo = arr.getJSONObject(i).getJSONObject("current_location");
+                		String temp= fbInfo.getString("city").toString();
+                		 stringArrayList.add(temp);
+                		 
+                                        		}
+                		
+                		
+                		
+                  // String c_city =  fbInfo.getString("city");
+                    //String c_state =  fbInfo.getString("state");
+                    //String c_country =  .getString("country");
+                    //Log.i("--->>>>", c_city);
+            //    } 
+	        
+	    //}
+	    }
+	      
+	      
+	    }
+	    
+	    catch ( Throwable t )
+	    {
+	        t.printStackTrace();
+	    }
+	    
+	    HashSet hs = new HashSet();
+	    hs.addAll(stringArrayList);
+	    stringArrayList.clear();
+	    stringArrayList.addAll(hs);
+	    Collections.sort(stringArrayList);
+	    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
+	            android.R.layout.activity_list_item, android.R.id.text1,stringArrayList );
+	    listView1.setAdapter(adapter);
+	}
 }
