@@ -1,6 +1,5 @@
 package com.kalyani.login2;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,22 +8,23 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,13 +32,11 @@ import com.facebook.AppEventsLogger;
 import com.facebook.FacebookRequestError;
 import com.facebook.HttpMethod;
 import com.facebook.Request;
-import com.facebook.RequestAsyncTask;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionDefaultAudience;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
-import com.facebook.android.Facebook;
 import com.facebook.model.GraphLocation;
 import com.facebook.model.GraphMultiResult;
 import com.facebook.model.GraphObject;
@@ -46,18 +44,10 @@ import com.facebook.model.GraphObjectList;
 import com.facebook.model.GraphPlace;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.FacebookDialog;
-import com.facebook.widget.LoginButton;
 
-// adding a line to check checking on 3/21
 
 public class AskActivity extends Activity  {
-	//
-	//	@Override
-	//	protected void onCreate(Bundle savedInstanceState) {
-	//		// TODO Auto-generated method stub
-	//		super.onCreate(savedInstanceState);
-	//		setContentView(R.layout.ask);
-	//	}
+
 	final Session.StatusCallback sessionStatusCallback = new Session.StatusCallback() {
 		@Override
 		public void call(final Session session, SessionState state, Exception exception) {
@@ -81,57 +71,49 @@ public class AskActivity extends Activity  {
 	private Button pickFriendsButton;
 	private TextView resultsTextView;
 	private EditText text;
-	private GraphUser user;
 	private List<String> tags = new ArrayList<String>();
-	private List<String> locids = new ArrayList<String>();
 	private GraphUser user2;
 	private static final int REAUTH_ACTIVITY_CODE = 100;
-	private boolean pendingAnnounce;
 	private PendingAction pendingAction = PendingAction.NONE;
 	private UiLifecycleHelper lifecycleHelper;
 	boolean pickFriendsWhenSessionOpened;
 	private boolean canPresentShareDialog=true;
+	ArrayList<String> stringArrayList = new ArrayList<String>();
 	private static final String PERMISSION = "publish_actions";
-	private static final String PERMISSION2 = "friends_location";
 	public static final List<String> ALL_PERMISSIONS = Arrays.asList(       
 			"read_friendlists",
-		//	"publish_stream",
 			"offline_access",
 			"email",
 			"read_stream",
 			"user_location",
 			"friends_location"); 
-
 	String place ="111856692159256";
 	GraphPlace gp =null;
 	String message;
 	ListView listView1;
-	ArrayAdapter arrayAdapter;
 	private enum PendingAction {
 		NONE,
-		POST_PHOTO,
 		POST_STATUS_UPDATE
 	}
-	private UiLifecycleHelper uiHelper;
-
-	private void handleGraphApiAnnounce() {
-		Session session = Session.getActiveSession();
-		Log.i("TAG","In handlegraphapiannouce");
-		List<String> permissions = session.getPermissions();
-		if (!permissions.contains(ALL_PERMISSIONS)) {
-			pendingAnnounce = true;
-			requestPublishPermissions(session, PERMISSION);
-			return;
-		}
-
-	}
+//	private void handleGraphApiAnnounce() {
+//		Session session = Session.getActiveSession();
+//		Log.i("TAG","In handle graph api annouce");
+//		List<String> permissions = session.getPermissions();
+//		if (!permissions.contains(ALL_PERMISSIONS)) {
+//			requestPublishPermissions(session, PERMISSION);
+//			return;
+//		}
+//
+//	}
 	
 	private void makeMeRequest(final Session session) {
+		Log.i("TAG", "In makeMeRequest method");
 	    Request request = Request.newMeRequest(session, 
 	            new Request.GraphUserCallback() {
 
 	        @Override
 	        public void onCompleted(GraphUser user, Response response) {
+	        	Log.i("TAG", "In onCompleted of  makeMeRequest method");
 	            // If the response is successful
 	            if (session == Session.getActiveSession()) {
 	                if (user != null) {
@@ -151,7 +133,7 @@ public class AskActivity extends Activity  {
 		
 		//session.openForPublish(new Session.OpenRequest(this).setPermissions(ALL_PERMISSIONS));
 		if (session != null) {
-			Log.i("TAG", "session != null");
+			Log.i("TAG", "session != null of requestPublishPermissions");
 			//session.openForPublish(new Session.OpenRequest(this).setPermissions(ALL_PERMISSIONS));
 			Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(this, string)
 			.setDefaultAudience(SessionDefaultAudience.ONLY_ME)
@@ -168,6 +150,7 @@ public class AskActivity extends Activity  {
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		Log.i("TAG", "in onCreate method");
 	//	List<String> tags = new ArrayList<String>();
 		//tags.add("1035192085");
 		makeMeRequest(Session.getActiveSession());
@@ -177,11 +160,35 @@ public class AskActivity extends Activity  {
 		
 		text = (EditText) findViewById(R.id.editText1);
 		listView1 = (ListView)findViewById(R.id.listView2);
+		listView1.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+	        public void onItemClick(AdapterView<?> parent, View view,
+	            int position, long id) {
+
+	            // selected item
+				//setContentView(R.layout.ask);
+				 Toast.makeText(getApplicationContext(), ((TextView) view).getText(), Toast.LENGTH_SHORT).show();
+				
+//	           String selected = ((TextView) view.findViewById(R.id.listView2)).getText().toString();
+//	           Log.i("TAG",selected);
+//
+//	            Toast toast=Toast.makeText(getApplicationContext(), selected, Toast.LENGTH_SHORT);
+//	            toast.show();
+		
+		    //either use toast to show item text        
+		  //  Toast.makeText(getApplicationContext(), ((TextView) view).getText(), Toast.LENGTH_SHORT).show();
+		    //else go to a new activity like this,
+		  //  Intent intent = new Intent();
+		   // intent.setClass(view.getContext(), AnotherClass.class);
+		    //startActivity(intent);
+		} } );
+		
 		resultsTextView = (TextView) findViewById(R.id.resultsTextView);
 		Button friendsloc =(Button) findViewById(R.id.friendsloc);
 		friendsloc.setOnClickListener(new View.OnClickListener() {
 			    @Override
 			    public void onClick(View v) {
+			    	Log.i("TAG", "onClick of friendsloc");
 			        String fqlQuery = "SELECT current_location FROM user WHERE uid IN " +
 			                "(SELECT uid2 FROM friend WHERE uid1 = me())";
 			        Bundle params = new Bundle();
@@ -194,7 +201,7 @@ public class AskActivity extends Activity  {
 			            new Request.Callback(){         
 			                public void onCompleted(Response response) {
 			                    Log.i("TAG", "Result: " + response.toString());
-			                    parseUserFromFQLResponse(response);
+			                    parseFQLResponse(response);
 			                }                  
 			        }); 
 			        Request.executeBatchAsync(request);                 
@@ -207,11 +214,9 @@ public class AskActivity extends Activity  {
 
 			@Override
 			public void onClick(View v) {
+				Toast.makeText(getApplicationContext(), "Posting message...", Toast.LENGTH_SHORT).show();
 				message = text.getText().toString();
-				Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-				Log.i("TAG", "in onclick");
-				// canPresentShareDialog = FacebookDialog.canPresentShareDialog(this,
-				//      FacebookDialog.ShareDialogFeature.SHARE_DIALOG);
+				Log.i("TAG", "in onclick of post button");
 				requestPublishPermissions(Session.getActiveSession(),PERMISSION);
 				onClickPostStatusUpdate();
 
@@ -220,13 +225,15 @@ public class AskActivity extends Activity  {
 		pickFriendsButton = (Button) findViewById(R.id.pickFriendsButton);
 		pickFriendsButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
-				onClickPickFriends();
+				Log.i("TAG", "in onclick of pickfriendsbutton");
+				startPickFriendsActivity();
 			}
 		});
 
 		lifecycleHelper = new UiLifecycleHelper(this, new Session.StatusCallback() {
 			@Override
 			public void call(Session session, SessionState state, Exception exception) {
+				Log.i("TAG", "in call below lifecyclehelper ");
 				onSessionStateChanged(session, state, exception);
 			}
 		});
@@ -239,20 +246,16 @@ public class AskActivity extends Activity  {
 
 	@Override
 	protected void onStart() {
+		Log.i("TAG", "in onStart");
 		super.onStart();
-
 		// Update the display every time we are started.
 		displaySelectedFriends(RESULT_OK);
-		//getfriendsids(RESULT_OK);
 	}
 
 	@Override
 	protected void onResume() {
+		Log.i("TAG", "in onResume");
 		super.onResume();
-		//displaySelectedFriends(RESULT_OK);
-		//getfriendsids(RESULT_OK);
-		// Call the 'activateApp' method to log an app event for use in analytics and advertising reporting.  Do so in
-		// the onResume methods of the primary Activities that an app may be launched into.
 		AppEventsLogger.activateApp(this);
 	}
 
@@ -269,6 +272,7 @@ public class AskActivity extends Activity  {
 	}
 
 	private boolean ensureOpenSession() {
+		Log.i("TAG","in ensureOpenSession");
 		if (Session.getActiveSession() == null ||
 				!Session.getActiveSession().isOpened()) {
 			Session.openActiveSession(this, true, new Session.StatusCallback() {
@@ -284,6 +288,7 @@ public class AskActivity extends Activity  {
 	}
 
 	private void onSessionStateChanged(Session session, SessionState state, Exception exception) {
+		Log.i("TAG","in onSessionStateChanged");
 		if (pickFriendsWhenSessionOpened && state.isOpened()) {
 			pickFriendsWhenSessionOpened = false;
 
@@ -310,14 +315,16 @@ public class AskActivity extends Activity  {
 		} else {
 			results = "Choose friends and enter your question here";
 		}
-		text.setText(results);
+		resultsTextView.setText(results);
 	}
 
-	private void onClickPickFriends() {
-		startPickFriendsActivity();
-	}
+//	private void onClickPickFriends() {
+//		Log.i("TAG","in onClickPickFriends");
+//		startPickFriendsActivity();
+//	}
 
 	private void startPickFriendsActivity() {
+		Log.i("TAG","in startPickFriendsActivity");
 		if (ensureOpenSession()) {
 			Intent intent = new Intent(this, PickFriendsActivity.class);
 			// Note: The following line is optional, as multi-select behavior is the default for
@@ -334,113 +341,19 @@ public class AskActivity extends Activity  {
 		Log.i("TAG", "In onClickPostStatusUpdate");
 		performPublish(PendingAction.POST_STATUS_UPDATE, canPresentShareDialog);
 	}
-	private void makeFriendsRequest()
-	{
-		Session.openActiveSession(this, true, new Session.StatusCallback() {
-
-		      // callback when session changes state
-		      @SuppressWarnings("deprecation")
-			@Override
-		      public void call(Session session, SessionState state, Exception exception) {
-		        if (session.isOpened()) {
-
-		          // make request to the 
-		            Request.executeMyFriendsRequestAsync(session, new Request.GraphUserListCallback() {
-
-		                @Override
-		                public void onCompleted(List<GraphUser> users, Response response) {
-		                    //Log.d("AL",""+users.size() + response.toString());
-//		                    for (int i=0;i<users.size();i++){
-//		                    	GraphUser user = users.get(i);
-//		                    	String Location = user.getLocation().toString();
-//		                        Log.d("AL",""+users.get(i).toString());
-//		                       // welcome.setText("Done");
-//		                    }
-		                	List<GraphUser> users2 = users;
-		            		if (users2 != null && users2.size() > 0) {
-		            		//	ArrayList<String> names = new ArrayList<String>();
-		            			for (GraphUser user : users2) {
-		            				//names.add(user.getName());
-		            				locids.add(user.getLocation().toString());
-		                }
-		            		}
-		                }
-		            });
-		        }
-		      }
-		    });
-		//Log.i("TAG","In makeFriendsRequest();");
-		//getLocation();
-		
-	}
-	
-	private void getLocation() {
-	    Request myFriendsRequest = Request.newMyFriendsRequest(Session.getActiveSession(), 
-	            new Request.GraphUserListCallback() {
-			@Override
-	        public void onCompleted(List<GraphUser> users, Response response) {
-	            if (response.getError() == null) {
-	            	
-	            Log.i("oncompleted_getlocation", " in if response is not null");
-	            	List<GraphUser> friends = showFriendsandLocation(users, response);
-	            	            		 
-	            		 for (GraphUser u1: friends)
-	            		 {
-	            		  GraphLocation loc = u1.getLocation();
-	                    	//String Location = user.getLocation().toString();
-	                        Log.d("frnd_loc_id",""+loc);
-	                       // welcome.setText("Done");
-	                    }
-	            	//listView1.
-	            	//Toast.makeText(getApplicationContext(), (CharSequence) friends, Toast.LENGTH_SHORT).show();
-	            	
-
-	            }
-			}
-
-	    });
-	    // Add location to the list of info to get.
-	    Bundle requestParams = myFriendsRequest.getParameters();
-	    requestParams.putString("fields", "location");
-	    myFriendsRequest.setParameters(requestParams);
-	    myFriendsRequest.executeAsync();
-	}
-
-	private List<GraphUser> showFriendsandLocation(List<GraphUser> users, Response response) {
-		Log.i("TAG", "In showPublishResult");
-		String title = null;
-		String alertMessage = null;
-		FacebookRequestError error = response.getError();
-		if (error == null) {
-			title = getString(R.string.success);
-			//String id = result.cast(GraphObjectWithId.class).getId();
-			//alertMessage = getString(R.string.successfully_posted_post, message, id);
-		} else {
-			title = getString(R.string.error);
-			alertMessage = error.getErrorMessage();
-		}
-
-		new AlertDialog.Builder(this)
-		.setTitle(title)
-		.setMessage(alertMessage)
-		.setPositiveButton(R.string.ok, null)
-		.show();
-		GraphMultiResult multiResult = response.getGraphObjectAs(GraphMultiResult.class);
-	    GraphObjectList<GraphObject> data = multiResult.getData();
-	    return data.castToListOf(GraphUser.class); 
-	}
 	private void performPublish(PendingAction action, boolean allowNoSession) {
+		Log.i("TAG", "In performPublish");
 		Session session = Session.getActiveSession();
 		if (session != null) {
 			pendingAction = action;
-			Log.i("TAG", "session != null");
+			Log.i("TAG", "session != null of performPublish");
 			if (hasPublishPermission()) {
 				// We can do the action right away.
-				Log.i("TAG", "In hasPublishPermission()");
+				Log.i("TAG", "In hasPublishPermission() of performPublish");
 				handlePendingAction();
 				return;
 			} else if (session.isOpened()) {
-				Log.i("TAG", "session.isOpened");
+				Log.i("TAG", "session.isOpened of performPublish");
 				// We need to get new permissions, then complete the action when we get called back.
 				//session.removeCallback(sessionStatusCallback);          // Remove callback from old session.
 				//session = Session.openActiveSessionFromCache(context);  // Create new session by re-opening from cache.
@@ -450,10 +363,9 @@ public class AskActivity extends Activity  {
 				Request request = Request
 						.newStatusUpdateRequest(Session.getActiveSession(),message,place, tags, new Request.Callback()
 						{
-							//Request request = Request
-							//.newStatusUpdateRequest(Session.getActiveSession(), message, new Request.Callback() {
 							@Override
 							public void onCompleted(Response response) {
+								Log.i("TAG", "onCompleted of performPublish");
 								showPublishResult(message, response.getGraphObject(), response.getError());
 							}
 						});
@@ -461,18 +373,19 @@ public class AskActivity extends Activity  {
 				return;
 			}
 			else
-				Log.i("TAG", "no session.isOpened()");
+				Log.i("TAG", "no session.isOpened() of performPublish");
 		}
 		else
-			Log.i("TAG", "no session performPublish");
+			Log.i("TAG", "no session performPublish of performPublish");
 
 		if (allowNoSession) {
-			Log.i("TAG", "In performPublish");
+			Log.i("TAG", "In allowNoSession of performPublish");
 			pendingAction = action;
 			handlePendingAction();
 		}
 	}
 	private boolean hasPublishPermission() {
+		Log.i("TAG", "In hasPublishPermission");
 		Session session = Session.getActiveSession();
 		return session != null && session.getPermissions().contains("publish_actions");
 	}
@@ -485,32 +398,28 @@ public class AskActivity extends Activity  {
 		pendingAction = PendingAction.NONE;
 
 		switch (previouslyPendingAction) {
-		case POST_PHOTO:
-			// postPhoto();
-			break;
 		case POST_STATUS_UPDATE:
 			postStatusUpdate();
 			break;
 		}
 	}
-	private FacebookDialog.ShareDialogBuilder createShareDialogBuilder() {
-		return new FacebookDialog.ShareDialogBuilder(this)
-		.setName("AskMyNetwork")
-		.setDescription("The 'AskMyNetwork' application lets you choose friends and ask them question")
-		.setLink("");
-	}
+//	private FacebookDialog.ShareDialogBuilder createShareDialogBuilder() {
+//		return new FacebookDialog.ShareDialogBuilder(this)
+//		.setName("AskMyNetwork")
+//		.setDescription("The 'AskMyNetwork' application lets you choose friends and ask them question")
+//		.setLink("");
+//	}
 	private void postStatusUpdate() {
 		Log.i("TAG", "In postStatusUpdate");
 		canPresentShareDialog=true;
 		if (user2 != null && hasPublishPermission()) {
 			Log.d(""+user2, "user2's value");
-			Log.i("TAG", "In user != null && hasPublishPermission()");
-			// final String message = getString(R.string.status_update, user.getFirstName(), (new Date().toString()));
+			Log.i("TAG", "In user != null && hasPublishPermission() of postStatusUpdate ");
 			Request request = Request
 					.newStatusUpdateRequest(Session.getActiveSession(), message, place ,tags, new Request.Callback() {
 						@Override
 						public void onCompleted(Response response) {
-							Log.i("TAG", "In oncompleted of poststatusupdate");
+							Log.i("TAG", "In oncompleted of postStatusUpdate");
 							showPublishResult(message, response.getGraphObject(), response.getError());
 						}
 					});
@@ -518,8 +427,8 @@ public class AskActivity extends Activity  {
 		}
 		else if(user2==null)
 		{
-			Log.d(""+user2, "user2's value");
-			Log.i("TAG","USER2 IS NULL");
+			Log.d(""+user2, "user2's value: ");
+			Log.i("TAG","USER2 IS NULL postStatusUpdate");
 		}
 
 		//        if (canPresentShareDialog) {
@@ -566,18 +475,18 @@ public class AskActivity extends Activity  {
 		String getId();
 	}
 		
-	public final void parseUserFromFQLResponse( Response response )
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public final void parseFQLResponse( Response response )
 	{
 		JSONObject fbInfo = new JSONObject();
-		ArrayList<String> stringArrayList = new ArrayList<String>();
-		JSONArray current_location = new JSONArray();
+		
 	    try
 	    {
 	        GraphObject go  = response.getGraphObject();
 	        JSONObject  jso = go.getInnerJSONObject();
 	        JSONArray   arr = jso.getJSONArray( "data" );
 	       for(int i = 0;i < arr.length(); i++){
-             // Log.e("jksdhkvjsdlvm", "inside 1st for loop");
+             // Log.i("TAG", "inside 1st for loop");
                 
                 		if((arr.getJSONObject(i).isNull("current_location")))
                 				{
@@ -590,19 +499,8 @@ public class AskActivity extends Activity  {
                 		 stringArrayList.add(temp);
                 		 
                                         		}
-                		
-                		
-                		
-                  // String c_city =  fbInfo.getString("city");
-                    //String c_state =  fbInfo.getString("state");
-                    //String c_country =  .getString("country");
-                    //Log.i("--->>>>", c_city);
-            //    } 
-	        
-	    //}
+
 	    }
-	      
-	      
 	    }
 	    
 	    catch ( Throwable t )
@@ -610,7 +508,19 @@ public class AskActivity extends Activity  {
 	        t.printStackTrace();
 	    }
 	    
-	    HashSet hs = new HashSet();
+//	    HashSet hs = new HashSet();
+//	    hs.addAll(stringArrayList);
+//	    stringArrayList.clear();
+//	    stringArrayList.addAll(hs);
+//	    Collections.sort(stringArrayList);
+//	    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
+//	            android.R.layout.activity_list_item, android.R.id.text1,stringArrayList );
+//	    listView1.setAdapter(adapter);
+	    displayFriendsLocation();
+	}
+	public final void displayFriendsLocation()
+	{
+		HashSet hs = new HashSet();
 	    hs.addAll(stringArrayList);
 	    stringArrayList.clear();
 	    stringArrayList.addAll(hs);
@@ -618,5 +528,8 @@ public class AskActivity extends Activity  {
 	    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
 	            android.R.layout.activity_list_item, android.R.id.text1,stringArrayList );
 	    listView1.setAdapter(adapter);
+	    
 	}
+	
+	
 }
