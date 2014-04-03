@@ -14,7 +14,7 @@
         android:textSize="13sp" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/button_clear"
         android:layout_width="93dp"
         android:layout_height="32dp"
         android:layout_gravity="right"

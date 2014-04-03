@@ -8,6 +8,36 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Clicked the search button" />
+        android:text="Please select search criteria" />
+
+    <CheckBox
+        android:id="@+id/checkBox4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Movie Theatre" />
+
+    <CheckBox
+        android:id="@+id/checkBox2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Restaurant" />
+
+    <CheckBox
+        android:id="@+id/checkBox3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Shopping" />
+
+    <ListView
+        android:id="@+id/listView1"
+        android:layout_width="266dp"
+        android:layout_height="219dp" >
+    </ListView>
+
+    <Button
+        android:id="@+id/buttons1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Search" />
 
 </LinearLayout>

@@ -49,6 +49,6 @@ public class SelectionFragment extends Fragment {
   }); 
 	    return view;
 	}
-	//added for auth ends here
+	
 
 }

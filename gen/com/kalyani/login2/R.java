@@ -349,10 +349,15 @@ containing a value of this type.
         public static final int icon=0x7f0200a0;
     }
     public static final class id {
-        public static final int action_settings=0x7f040031;
-        public static final int button1=0x7f040009;
-        public static final int button2=0x7f04002f;
+        public static final int action_settings=0x7f040037;
+        public static final int button1=0x7f040035;
+        public static final int button2=0x7f040034;
         public static final int buttonPost=0x7f04000f;
+        public static final int button_clear=0x7f040009;
+        public static final int buttons1=0x7f040033;
+        public static final int checkBox2=0x7f040030;
+        public static final int checkBox3=0x7f040031;
+        public static final int checkBox4=0x7f04002f;
         public static final int com_facebook_login_activity_progress_bar=0x7f040012;
         public static final int com_facebook_picker_activity_circle=0x7f040011;
         public static final int com_facebook_picker_checkbox=0x7f040014;
@@ -379,6 +384,7 @@ containing a value of this type.
         public static final int friendsloc=0x7f04000d;
         public static final int greeting=0x7f040029;
         public static final int large=0x7f040002;
+        public static final int listView1=0x7f040032;
         public static final int listView2=0x7f04000e;
         public static final int login_button=0x7f040028;
         public static final int main_ui_container=0x7f040027;
@@ -392,7 +398,7 @@ containing a value of this type.
         public static final int postPhotoButton=0x7f04002c;
         public static final int postStatusUpdateButton=0x7f04002b;
         public static final int profilePicture=0x7f04002a;
-        public static final int profile_name=0x7f040030;
+        public static final int profile_name=0x7f040036;
         public static final int resultsTextView=0x7f04000a;
         public static final int selectionFragment=0x7f040003;
         public static final int small=0x7f040000;

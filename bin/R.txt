@@ -202,10 +202,15 @@ int drawable custom_theme1_textfield_focused_holo_dark 0x7f02009d
 int drawable facebook 0x7f02009e
 int drawable ic_launcher 0x7f02009f
 int drawable icon 0x7f0200a0
-int id action_settings 0x7f040031
-int id button1 0x7f040009
-int id button2 0x7f04002f
+int id action_settings 0x7f040037
+int id button1 0x7f040035
+int id button2 0x7f040034
 int id buttonPost 0x7f04000f
+int id button_clear 0x7f040009
+int id buttons1 0x7f040033
+int id checkBox2 0x7f040030
+int id checkBox3 0x7f040031
+int id checkBox4 0x7f04002f
 int id com_facebook_login_activity_progress_bar 0x7f040012
 int id com_facebook_picker_activity_circle 0x7f040011
 int id com_facebook_picker_checkbox 0x7f040014
@@ -232,6 +237,7 @@ int id friend_picker_fragment 0x7f040026
 int id friendsloc 0x7f04000d
 int id greeting 0x7f040029
 int id large 0x7f040002
+int id listView1 0x7f040032
 int id listView2 0x7f04000e
 int id login_button 0x7f040028
 int id main_ui_container 0x7f040027
@@ -245,7 +251,7 @@ int id picker_subtitle 0x7f04001f
 int id postPhotoButton 0x7f04002c
 int id postStatusUpdateButton 0x7f04002b
 int id profilePicture 0x7f04002a
-int id profile_name 0x7f040030
+int id profile_name 0x7f040036
 int id resultsTextView 0x7f04000a
 int id selectionFragment 0x7f040003
 int id small 0x7f040000

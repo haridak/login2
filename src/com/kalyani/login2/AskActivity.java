@@ -70,6 +70,9 @@ public class AskActivity extends Activity  {
   	
 	private Button pickFriendsButton;
 	private TextView resultsTextView;
+	String results = "";
+	String post_id;
+	ArrayList<String> prev_post_ids = new ArrayList<String>();
 	private EditText text;
 	private List<String> tags = new ArrayList<String>();
 	private GraphUser user2;
@@ -79,6 +82,7 @@ public class AskActivity extends Activity  {
 	boolean pickFriendsWhenSessionOpened;
 	private boolean canPresentShareDialog=true;
 	ArrayList<String> stringArrayList = new ArrayList<String>();
+	ArrayList<String> stringArrayList_names = new ArrayList<String>();
 	private static final String PERMISSION = "publish_actions";
 	public static final List<String> ALL_PERMISSIONS = Arrays.asList(       
 			"read_friendlists",
@@ -86,6 +90,7 @@ public class AskActivity extends Activity  {
 			"email",
 			"read_stream",
 			"user_location",
+			"friends_likes",
 			"friends_location"); 
 	String place ="111856692159256";
 	GraphPlace gp =null;
@@ -131,7 +136,7 @@ public class AskActivity extends Activity  {
 	private void requestPublishPermissions(Session session, String string) {
 		Log.i("TAG", "in requestPublishPermissions ");
 		
-		//session.openForPublish(new Session.OpenRequest(this).setPermissions(ALL_PERMISSIONS));
+	//	session.openForPublish(new Session.OpenRequest(this).setPermissions(ALL_PERMISSIONS));
 		if (session != null) {
 			Log.i("TAG", "session != null of requestPublishPermissions");
 			//session.openForPublish(new Session.OpenRequest(this).setPermissions(ALL_PERMISSIONS));
@@ -159,29 +164,111 @@ public class AskActivity extends Activity  {
 		//Button loginButton = (Button)findViewById(R.id.login_button);
 		
 		text = (EditText) findViewById(R.id.editText1);
-		listView1 = (ListView)findViewById(R.id.listView2);
+		
+		
+//		 String fqlQuery = "SELECT current_location FROM user WHERE uid IN " +
+//	                "(SELECT uid2 FROM friend WHERE uid1 = me())";
+//	        Bundle params = new Bundle();
+//	        params.putString("q", fqlQuery);
+//	        Session session = Session.getActiveSession();
+//	        Request request = new Request(session,
+//	            "/fql",                         
+//	            params,                         
+//	            HttpMethod.GET,                 
+//	            new Request.Callback(){         
+//	                public void onCompleted(Response response) {
+//	                    Log.i("TAG", "Result: " + response.toString());
+//	                    parseFQLResponse(response);
+//	                }                  
+//	        }); 
+//	        Request.executeBatchAsync(request); 
+		//displayFriendsLocation();
+	       // HashSet hs = new HashSet();
+		    //hs.addAll(stringArrayList);
+		    //stringArrayList.clear();
+		    //stringArrayList.addAll(hs);
+		    //Collections.sort(stringArrayList);
+		    //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
+		      //      android.R.layout.activity_list_item, android.R.id.text1,stringArrayList );
+		    this.listView1 = (ListView)findViewById(R.id.listView2);
+		  //  listView1.setAdapter(adapter);
+		
 		listView1.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 	        public void onItemClick(AdapterView<?> parent, View view,
 	            int position, long id) {
 
-	            // selected item
-				//setContentView(R.layout.ask);
-				 Toast.makeText(getApplicationContext(), ((TextView) view).getText(), Toast.LENGTH_SHORT).show();
-				
-//	           String selected = ((TextView) view.findViewById(R.id.listView2)).getText().toString();
-//	           Log.i("TAG",selected);
-//
-//	            Toast toast=Toast.makeText(getApplicationContext(), selected, Toast.LENGTH_SHORT);
-//	            toast.show();
-		
-		    //either use toast to show item text        
-		  //  Toast.makeText(getApplicationContext(), ((TextView) view).getText(), Toast.LENGTH_SHORT).show();
-		    //else go to a new activity like this,
-		  //  Intent intent = new Intent();
-		   // intent.setClass(view.getContext(), AnotherClass.class);
-		    //startActivity(intent);
+				listView1.getItemAtPosition(position);
+
+		          if ((listView1.getItemAtPosition(position)) == null) {
+		              Log.v("TextView", "Null");
+		          }
+		          else
+		          {
+		          String s = listView1.getItemAtPosition(position).toString();
+		         // int _listViewPostion = position;
+		          Log.i(s, s);
+	           Toast toast=Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT);
+	           toast.show();
+	           getFriends(s);
+		          }
 		} } );
+				Button clear =(Button) findViewById(R.id.button_clear);
+		clear.setOnClickListener(new View.OnClickListener() {
+			    @Override
+			    public void onClick(View v) {
+		
+		String fqlQuery = 
+				"SELECT id, text, time, fromid FROM comment WHERE post_id ='102025155895844000'";
+
+						        Bundle params = new Bundle();
+						        params.putString("q", fqlQuery);
+						        Session session = Session.getActiveSession();
+						        Request request = new Request(session,
+						            "/fql",                         
+						            params,                         
+						            HttpMethod.GET,                 
+						            new Request.Callback(){         
+						                public void onCompleted(Response response) {
+						                    Log.i("pages_info", "Result: " + response.toString());
+						                   // parseFQLResponse(response);
+						                }                  
+						        }); 
+						        Request.executeBatchAsync(request);  
+//			    	
+//			        String fqlQuery = 
+//	   "SELECT name from page WHERE page_id IN (SELECT page_id FROM page_fan WHERE uid IN (SELECT uid2 FROM friend WHERE uid1 = me()))";
+//			        Bundle params = new Bundle();
+//			        params.putString("q", fqlQuery);
+//			        Session session = Session.getActiveSession();
+//			        Request request = new Request(session,
+//			            "/fql",                         
+//			            params,                         
+//			            HttpMethod.GET,                 
+//			            new Request.Callback(){         
+//			                public void onCompleted(Response response) {
+//			                    Log.i("pages_info", "Result: " + response.toString());
+//			                   // parseFQLResponse(response);
+//			                }                  
+//			        }); 
+//			        Request.executeBatchAsync(request);                 
+						        }
+		});
+		
+		//Button previousAnswer = (Button)findViewById(R.id.);
+		//previousAnswer.setOnClickListener(new View.OnClickListener() {
+//		 @Override
+//         public void onClick(View v)
+//         {
+//         	Log.i("TAG", "In onClick of search button");
+//         	Intent intent = new Intent(v.getContext(),NotificationsActivity.class);
+//         	intent.putExtra("string-array",prev_post_ids );
+//         	startActivityForResult(intent,0);
+//         	Log.i("TAG", "In startActivityForResult of search button");
+//		
+//         }
+//		 
+//		 });
 		
 		resultsTextView = (TextView) findViewById(R.id.resultsTextView);
 		Button friendsloc =(Button) findViewById(R.id.friendsloc);
@@ -458,18 +545,23 @@ public class AskActivity extends Activity  {
 		text.setText("");
 		if (error == null) {
 			title = getString(R.string.success);
-			String id = result.cast(GraphObjectWithId.class).getId();
-			alertMessage = getString(R.string.successfully_posted_post, message, id);
+			 post_id = result.cast(GraphObjectWithId.class).getId();
+			 int pos = post_id.lastIndexOf("_");
+			String substring =  post_id.substring(pos+1,post_id.length());
+			alertMessage = getString(R.string.successfully_posted_post,"",substring);
 		} else {
 			title = getString(R.string.error);
 			alertMessage = error.getErrorMessage();
 		}
-
+		prev_post_ids.add(post_id);
 		new AlertDialog.Builder(this)
+	
 		.setTitle(title)
 		.setMessage(alertMessage)
 		.setPositiveButton(R.string.ok, null)
 		.show();
+		Log.i("post_id", post_id);
+		ViewResponses(prev_post_ids);
 	}
 	private interface GraphObjectWithId extends GraphObject {
 		String getId();
@@ -531,5 +623,85 @@ public class AskActivity extends Activity  {
 	    
 	}
 	
+	   public void getFriends(String city) {
+	    	Log.i("TAG", "onClick of friendsloc");
+	        String fqlQuery = "SELECT uid, name FROM user WHERE uid IN (SELECT uid2 FROM friend WHERE uid1 = me()) AND current_location.city='"+city+"'"; ;
+	        Bundle params = new Bundle();
+	        params.putString("q", fqlQuery);
+	        Session session = Session.getActiveSession();
+	        Request request = new Request(session,
+	            "/fql",                         
+	            params,                         
+	            HttpMethod.GET,                 
+	            new Request.Callback(){         
+	                public void onCompleted(Response response) {
+	                    Log.i("TAG", "Result: " + response.toString());
+	                    parseLocationFQLResponse(response);
+	                }                  
+	        }); 
+	        Request.executeBatchAsync(request);                 
+	    }
 	
+		   public final void parseLocationFQLResponse( Response response )
+			{
+				String fbInfo;
+				String fbInfo_UID;
+				
+			    try
+			    {
+			        GraphObject go  = response.getGraphObject();
+			        JSONObject  jso = go.getInnerJSONObject();
+			        JSONArray   arr = jso.getJSONArray( "data" );
+			       for(int i = 0;i < arr.length(); i++){
+		             // Log.i("TAG", "inside 1st for loop");
+		                
+		                		//if((arr.getJSONObject(i).isNull("uid")))
+		                			//	{
+		                			//Log.i("tag","value is null");
+		                				//}
+		                		//else
+		                		//{
+		                		 fbInfo_UID = arr.getJSONObject(i).getString("uid");
+		                		 fbInfo = arr.getJSONObject(i).getString("name");
+		                		 Log.i("fbinfo", fbInfo);
+		                		//String temp= fbInfo.substring("name").toString();
+		                		 stringArrayList_names.add(fbInfo);
+		                		 results = TextUtils.join(", ", stringArrayList_names);
+		                		 resultsTextView.setText(results);
+		                		 tags.add(fbInfo_UID);
+		                		 
+		                		 
+		                          //              		}
+		                		
+
+			    }
+			    }
+			    
+			    catch ( Throwable t )
+			    {
+			        t.printStackTrace();
+			    }
+			    
+	   }
+			public void ViewResponses(ArrayList<String> prev_post_ids2 )
+			{
+				String fqlQuery = 
+						"SELECT text FROM comment where post_id ='10202516269361394'";
+
+								        Bundle params = new Bundle();
+								        params.putString("q", fqlQuery);
+								        Session session = Session.getActiveSession();
+								        Request request = new Request(session,
+								            "/fql",                         
+								            params,                         
+								            HttpMethod.GET,                 
+								            new Request.Callback(){         
+								                public void onCompleted(Response response) {
+								                    Log.i("pages_info", "Result: " + response.toString());
+								                   // parseFQLResponse(response);
+								                }                  
+								        }); 
+								        Request.executeBatchAsync(request);  
+			}
+		   
 }
