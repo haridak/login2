@@ -75,6 +75,7 @@ public class AskActivity extends Activity  {
 	String post_id;
 	ArrayList<String> prev_post_ids = new ArrayList<String>();
 	private EditText text;
+	int i=0;
 	private List<String> tags = new ArrayList<String>();
 	private GraphUser user2;
 	private static final int REAUTH_ACTIVITY_CODE = 100;
@@ -758,6 +759,7 @@ public class AskActivity extends Activity  {
 					public void onCompleted(Response response) {
 						Log.i("pages_info", "Result: " + response.toString());
 						parseAnswersFQLResponse(response);
+						i++;
 					}                  
 				}); 
 				Request.executeBatchAsync(request);  
@@ -858,13 +860,13 @@ public class AskActivity extends Activity  {
 			}
 			else
 			{
-				for( String s :postMessages ) {
 
+					String s = postMessages.get(i);
 					stringArrayList_responses.add(s);
 
 					for(int i = 0;i < arr.length(); i++){
 						// Log.i("TAG", "inside 1st for loop");
-
+						
 						if((arr.getJSONObject(i).isNull("text")))
 						{
 							Log.i("tag","value is null");
@@ -879,10 +881,10 @@ public class AskActivity extends Activity  {
 							postIDs_temp.add(fbInfo3);
 
 						}
+						
 					}       
 
 				}
-			}
 
 		}
 		catch ( Throwable t )
