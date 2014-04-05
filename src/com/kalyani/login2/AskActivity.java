@@ -167,10 +167,9 @@ public class AskActivity extends Activity  {
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ask);
-		ViewMesssagesFromPostID(prev_post_ids);
-		this.wait("5000");
-		ViewResponses(prev_post_ids);
-		this.wait("5000");
+		//ViewMesssagesFromPostID(prev_post_ids);
+		//ViewResponses(prev_post_ids);
+		
 		//Button loginButton = (Button)findViewById(R.id.login_button);
 
 		text = (EditText) findViewById(R.id.editText1);
@@ -266,6 +265,8 @@ public class AskActivity extends Activity  {
 		});
 
 		Button previousAnswer = (Button)findViewById(R.id.previous_answers);
+		ViewMesssagesFromPostID(prev_post_ids);
+		ViewResponses(prev_post_ids);
 		previousAnswer.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v)
@@ -351,10 +352,6 @@ public class AskActivity extends Activity  {
 				FacebookDialog.ShareDialogFeature.SHARE_DIALOG);
 	}
 
-	private void wait(String string) {
-		// TODO Auto-generated method stub
-		
-	}
 	@Override
 	protected void onStart() {
 		Log.i("TAG", "in onStart");
@@ -719,10 +716,14 @@ public class AskActivity extends Activity  {
 	public void ViewResponses(ArrayList<String> prev_post_ids2 )
 	{
 
-		prev_post_ids2.add("10202529292046953");
-		prev_post_ids2.add("10202529295847048");
-		prev_post_ids.add("10202529292046953");
-		prev_post_ids.add("10202529295847048");
+		//prev_post_ids2.add("10202529292046953");
+		//prev_post_ids2.add("10202529295847048");
+		//prev_post_ids.add("10202529292046953");
+		//prev_post_ids.add("10202529295847048");
+		
+		prev_post_ids2.add("10202533463151228");
+		prev_post_ids2.add("10202533466631315");
+		
 		//ViewMesssagesFromPostID(prev_post_ids);
 		StringBuilder builder = new StringBuilder();
 		builder.append("(");
@@ -767,8 +768,8 @@ public class AskActivity extends Activity  {
 	{
 
 
-		prev_post_ids4.add("10202529292046953");
-		prev_post_ids4.add("10202529295847048");
+		prev_post_ids4.add("10202533463151228");
+		prev_post_ids4.add("10202533466631315");
 
 		for( String s : prev_post_ids4) {
 
