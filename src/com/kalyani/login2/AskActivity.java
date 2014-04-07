@@ -26,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -139,6 +140,7 @@ public class AskActivity extends Activity  {
 		});
 		request.executeAsync();
 	} 
+
 	private void requestPublishPermissions(Session session, String string) {
 		Log.i("TAG", "in requestPublishPermissions ");
 
@@ -165,12 +167,13 @@ public class AskActivity extends Activity  {
 		//	List<String> tags = new ArrayList<String>();
 		//tags.add("1035192085");
 		makeMeRequest(Session.getActiveSession());
-		
+		getCurrentUserLocation(Session.getActiveSession()); 
+		userLikes(Session.getActiveSession()); 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ask);
 		//ViewMesssagesFromPostID(prev_post_ids);
 		//ViewResponses(prev_post_ids);
-		
+
 		//Button loginButton = (Button)findViewById(R.id.login_button);
 
 		text = (EditText) findViewById(R.id.editText1);
@@ -285,6 +288,7 @@ public class AskActivity extends Activity  {
 				}
 				else
 				{
+					Toast.makeText(getApplicationContext(), "No responses available.", Toast.LENGTH_SHORT).show();
 					Log.i("TAG", "didnt start the notificationsactivity");
 				}
 
@@ -647,8 +651,9 @@ public class AskActivity extends Activity  {
 		Collections.sort(stringArrayList);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
 				android.R.layout.activity_list_item, android.R.id.text1,stringArrayList );
+		
 		listView1.setAdapter(adapter);
-
+		
 	}
 
 	public void getFriends(String city) {
@@ -716,15 +721,9 @@ public class AskActivity extends Activity  {
 
 	public void ViewResponses(ArrayList<String> prev_post_ids2 )
 	{
+		//prev_post_ids2.add("10202533463151228");
+		//prev_post_ids2.add("10202533466631315");
 
-		//prev_post_ids2.add("10202529292046953");
-		//prev_post_ids2.add("10202529295847048");
-		//prev_post_ids.add("10202529292046953");
-		//prev_post_ids.add("10202529295847048");
-		
-		prev_post_ids2.add("10202533463151228");
-		prev_post_ids2.add("10202533466631315");
-		
 		//ViewMesssagesFromPostID(prev_post_ids);
 		StringBuilder builder = new StringBuilder();
 		builder.append("(");
@@ -738,40 +737,40 @@ public class AskActivity extends Activity  {
 			//builder.append( " '' ");
 			//builder.append(");");
 			//Log.i("builder", builder.toString());
-		//	if(s.isEmpty())
+			//	if(s.isEmpty())
 			//{
-				//Log.i("tag", " the post id in viewresponses is empty");
+			//Log.i("tag", " the post id in viewresponses is empty");
 
 			//}
 			//else
 			//{
-				String fqlQuery = 
-						"SELECT post_id, text FROM comment where post_id  = " + "'"+s +"';";
-				Log.i("fql query", fqlQuery);
-				Bundle params = new Bundle();
-				params.putString("q", fqlQuery);
-				Session session = Session.getActiveSession();
-				Request request = new Request(session,
-						"/fql",                         
-						params,                         
-						HttpMethod.GET,                 
-						new Request.Callback(){         
-					public void onCompleted(Response response) {
-						Log.i("pages_info", "Result: " + response.toString());
-						parseAnswersFQLResponse(response);
-						i++;
-					}                  
-				}); 
-				Request.executeBatchAsync(request);  
-			}
-
+			String fqlQuery = 
+					"SELECT post_id, text FROM comment where post_id  = " + "'"+s +"';";
+			Log.i("fql query", fqlQuery);
+			Bundle params = new Bundle();
+			params.putString("q", fqlQuery);
+			Session session = Session.getActiveSession();
+			Request request = new Request(session,
+					"/fql",                         
+					params,                         
+					HttpMethod.GET,                 
+					new Request.Callback(){         
+				public void onCompleted(Response response) {
+					Log.i("pages_info", "Result: " + response.toString());
+					parseAnswersFQLResponse(response);
+					i++;
+				}                  
+			}); 
+			Request.executeBatchAsync(request);  
 		}
+
+	}
 	public void ViewMesssagesFromPostID(ArrayList<String> prev_post_ids4)
 	{
 
 
-		prev_post_ids4.add("10202533463151228");
-		prev_post_ids4.add("10202533466631315");
+		//prev_post_ids4.add("10202533463151228");
+		//prev_post_ids4.add("10202533466631315");
 
 		for( String s : prev_post_ids4) {
 
@@ -861,30 +860,30 @@ public class AskActivity extends Activity  {
 			else
 			{
 
-					String s = postMessages.get(i);
-					stringArrayList_responses.add(s);
+				String s = postMessages.get(i);
+				stringArrayList_responses.add(s);
 
-					for(int i = 0;i < arr.length(); i++){
-						// Log.i("TAG", "inside 1st for loop");
-						
-						if((arr.getJSONObject(i).isNull("text")))
-						{
-							Log.i("tag","value is null");
-						}
-						else
-						{
-							fbInfo3 = arr.getJSONObject(i).getString("post_id");
-							fbInfo2 = arr.getJSONObject(i).getString("text");
-							Log.i("fbinfo", fbInfo2);
-							//String temp= fbInfo.substring("name").toString();
-							stringArrayList_responses.add(fbInfo2);
-							postIDs_temp.add(fbInfo3);
+				for(int i = 0;i < arr.length(); i++){
+					// Log.i("TAG", "inside 1st for loop");
 
-						}
-						
-					}       
+					if((arr.getJSONObject(i).isNull("text")))
+					{
+						Log.i("tag","value is null");
+					}
+					else
+					{
+						fbInfo3 = arr.getJSONObject(i).getString("post_id");
+						fbInfo2 = arr.getJSONObject(i).getString("text");
+						Log.i("fbinfo", fbInfo2);
+						//String temp= fbInfo.substring("name").toString();
+						stringArrayList_responses.add(fbInfo2);
+						postIDs_temp.add(fbInfo3);
 
-				}
+					}
+
+				}       
+
+			}
 
 		}
 		catch ( Throwable t )
@@ -894,4 +893,127 @@ public class AskActivity extends Activity  {
 		return stringArrayList_responses;
 
 	}
+
+	//https://graph.facebook.com/fql?q=SELECT current_location FROM user WHERE uid=me()& access_token=xxxxx
+
+	public void getCurrentUserLocation(final Session session) {
+
+		Log.i("TAG", "onClick of friendsloc");
+		String fqlQuery = "SELECT current_location.id FROM user WHERE uid = me()";
+		Bundle params = new Bundle();
+		params.putString("q", fqlQuery);
+		Request request = new Request(session,
+				"/fql",                         
+				params,                         
+				HttpMethod.GET,                 
+				new Request.Callback(){         
+			public void onCompleted(Response response) {
+				JSONObject fbInfo = new JSONObject();
+				Log.i("TAG", "current_location: " + response.toString());
+				try
+				{
+					GraphObject go  = response.getGraphObject();
+					JSONObject  jso = go.getInnerJSONObject();
+					JSONArray   arr = jso.getJSONArray( "data" );
+
+					fbInfo = arr.getJSONObject(i).getJSONObject("current_location");
+
+					if((fbInfo.getString("id").isEmpty()))
+					{
+						Log.i("tag","value is null");
+					}
+					else
+					{
+
+						place =fbInfo.getString("id");
+						Log.i(" the place id", place);
+
+					}
+
+				}       
+				catch( Throwable t )
+				{
+					t.printStackTrace();
+				}
+			}  
+		}); 
+		Request.executeBatchAsync(request);                 
+	}	
+
+//	public void userLikes(final Session session) {
+//
+//		Log.i("TAG", "userlikes");
+//		String fqlQuery = "SELECT reviewee_id,rating FROM review WHERE reviewee_id IN (SELECT page_id, name from page WHERE page_id IN (SELECT page_id FROM page_fan WHERE uid IN (SELECT uid1, uid2 FROM friend WHERE uid1 = me())) AND type IN ('FOOD/BEVERAGES','BAKERY','RESTAURANT/CAFE'))";
+//		Bundle params = new Bundle();
+//		params.putString("q", fqlQuery);
+//		Request request = new Request(session,
+//				"/fql",                         
+//				params,                         
+//				HttpMethod.GET,                 
+//				new Request.Callback(){         
+//			public void onCompleted(Response response) {
+//				JSONObject fbInfo = new JSONObject();
+//				int avg = 0;
+//				ArrayList<Integer> reviewee_ids = new ArrayList<Integer>();
+//				ArrayList<Integer> ratings = new ArrayList<Integer>();
+//				Log.i("userlikes", response.toString());
+//				try
+//				{
+//				
+//					GraphObject go  = response.getGraphObject();
+//					JSONObject  jso = go.getInnerJSONObject();
+//					JSONArray   arr = jso.getJSONArray( "data" );
+//					for(int k = 1;k < arr.length(); k++)
+//					{
+//						//for(int j=0;j<=1;j++)
+//						//{
+//					int c =arr.getJSONObject(k).getInt("reviewee_id");
+//					int a = arr.getJSONObject(k).getInt("rating");
+//				if(c>5)
+//				{
+//					c=c+arr.getJSONObject(k-1).getInt("reviewee_id")/2;
+//				}
+//				else
+//					a= a+arr.getJSONObject(k).getInt("rating")/2;
+//					
+//					Log.i("rating", Integer.toString(c));
+//					Log.i("rating", Integer.toString(a));
+//					//markers.add(c);
+//					
+//			
+//				}     
+//					}
+//				//}
+//				catch( Throwable t )
+//				{
+//					t.printStackTrace();
+//			}
+//			}  
+//		}); 
+//		Request.executeBatchAsync(request);                 
+//	}
+	//final , gets only restaurant pages
+	//SELECT name, categories.name FROM page WHERE page_id IN  (SELECT page_id FROM page_fan WHERE uid IN (SELECT uid1, uid2 FROM friend WHERE uid1 = me()) AND type IN ('FOOD/BEVERAGES','BAKERY','RESTAURANT/CAFE'));
+	//SELECT page_id, type FROM page_fan WHERE uid IN (SELECT uid1, uid2 FROM friend WHERE uid1 = me()); 
+	//SELECT name, categories.name FROM page WHERE page_id IN  (SELECT page_id FROM page_fan WHERE uid IN (SELECT uid1, uid2 FROM friend WHERE uid1 = me())) AND strpos(categories.name,"restaurant")>0;
+
+	public void userLikes(final Session session) {
+
+		Log.i("TAG", "userlikes");
+		new Request(
+		    session,
+		    "/{review-id}",
+		    null,
+		    HttpMethod.GET,
+		    new Request.Callback() {
+		        public void onCompleted(Response response) {
+		           Log.i("new_user_like" ,response.toString());
+		        }
+		    }
+		).executeAsync();
+	}
+	
+	//SELECT type, name,location.city from page WHERE page_id IN (SELECT page_id FROM page_fan WHERE uid IN (SELECT uid1, uid2 FROM friend WHERE uid1 = me()) AND type IN ( "RESTAURANT/CAFE", "BAR", "HOTEL", "MEXICAN RESTAURANT"));
+	
+	//SELECT name,location from page where page_id IN (SELECT reviewee_id,rating FROM review WHERE reviewee_id IN (SELECT page_id, name from page WHERE page_id IN (SELECT page_id FROM page_fan WHERE uid IN (SELECT uid1, uid2 FROM friend WHERE uid1 = me())) AND type IN ('FOOD/BEVERAGES','BAKERY','RESTAURANT/CAFE')));
 }

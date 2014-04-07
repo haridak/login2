@@ -11,33 +11,48 @@
         android:text="Please select search criteria" />
 
     <CheckBox
-        android:id="@+id/checkBox4"
+        android:id="@+id/movie_theatre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Movie Theatre" />
+        android:onClick="onCheckboxClicked"
+        android:text="Movie Theatre"
+        android:textSize="12dp" />
 
     <CheckBox
-        android:id="@+id/checkBox2"
+        android:id="@+id/restaurant"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Restaurant" />
+        android:onClick="onCheckboxClicked"
+        android:text="Restaurant"
+        android:textSize="12dp" />
 
     <CheckBox
-        android:id="@+id/checkBox3"
+        android:id="@+id/shopping"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Shopping" />
+        android:onClick="onCheckboxClicked"
+        android:text="Shopping"
+        android:textSize="12dp" />
+     <CheckBox
+        android:id="@+id/selectloc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onCheckboxClicked"
+        android:text="Select Location?"
+        android:textSize="12dp" />
 
     <ListView
-        android:id="@+id/listView1"
-        android:layout_width="266dp"
-        android:layout_height="219dp" >
+        android:id="@+id/Searchlocation"
+        android:layout_width="match_parent"
+        android:layout_height="274dp"
+        android:textSize="12dp" >
     </ListView>
 
     <Button
-        android:id="@+id/buttons1"
-        android:layout_width="match_parent"
+        android:id="@+id/search_button"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:text="Search" />
 
 </LinearLayout>

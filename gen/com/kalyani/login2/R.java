@@ -349,16 +349,13 @@ containing a value of this type.
         public static final int icon=0x7f0200a0;
     }
     public static final class id {
-        public static final int action_settings=0x7f04003a;
+        public static final int Searchlocation=0x7f040036;
+        public static final int action_settings=0x7f04003b;
         public static final int answers_listview=0x7f040028;
-        public static final int button1=0x7f040038;
-        public static final int button2=0x7f040037;
+        public static final int button1=0x7f040039;
+        public static final int button2=0x7f040038;
         public static final int buttonPost=0x7f040010;
         public static final int button_clear=0x7f04000a;
-        public static final int buttons1=0x7f040036;
-        public static final int checkBox2=0x7f040033;
-        public static final int checkBox3=0x7f040034;
-        public static final int checkBox4=0x7f040032;
         public static final int com_facebook_login_activity_progress_bar=0x7f040014;
         public static final int com_facebook_picker_activity_circle=0x7f040013;
         public static final int com_facebook_picker_checkbox=0x7f040016;
@@ -385,10 +382,10 @@ containing a value of this type.
         public static final int friendsloc=0x7f04000e;
         public static final int greeting=0x7f04002c;
         public static final int large=0x7f040002;
-        public static final int listView1=0x7f040035;
         public static final int listView2=0x7f04000f;
         public static final int login_button=0x7f04002b;
         public static final int main_ui_container=0x7f04002a;
+        public static final int movie_theatre=0x7f040032;
         public static final int normal=0x7f040001;
         public static final int option_detail=0x7f040027;
         public static final int option_detail_container=0x7f040006;
@@ -400,9 +397,13 @@ containing a value of this type.
         public static final int postStatusUpdateButton=0x7f04002e;
         public static final int previous_answers=0x7f040011;
         public static final int profilePicture=0x7f04002d;
-        public static final int profile_name=0x7f040039;
+        public static final int profile_name=0x7f04003a;
+        public static final int restaurant=0x7f040033;
         public static final int resultsTextView=0x7f04000b;
+        public static final int search_button=0x7f040037;
         public static final int selectionFragment=0x7f040003;
+        public static final int selectloc=0x7f040035;
+        public static final int shopping=0x7f040034;
         public static final int small=0x7f040000;
         public static final int splashFragment=0x7f040004;
         public static final int textView1=0x7f04000d;
@@ -435,8 +436,9 @@ containing a value of this type.
         public static final int pick_friends_activity=0x7f030016;
         public static final int postquestion=0x7f030017;
         public static final int search=0x7f030018;
-        public static final int selection=0x7f030019;
-        public static final int splash=0x7f03001a;
+        public static final int searchresults=0x7f030019;
+        public static final int selection=0x7f03001a;
+        public static final int splash=0x7f03001b;
     }
     public static final class menu {
         public static final int main=0x7f090000;

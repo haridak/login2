@@ -4,22 +4,22 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     tools:ignore="HardcodedText" >
+
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="Enter your question and choose friends to ask question"
+        android:layout_gravity="left"
+        android:text="Enter your Question and Choose Friends to Ask Question"
         android:textSize="12sp" />
 
     <EditText
         android:id="@+id/editText1"
         android:layout_width="match_parent"
         android:layout_height="42dp"
-        android:background="#F0F0F0"
         android:ems="0"
         android:inputType="textMultiLine"
-        android:textSize="12sp" />
+        android:textSize="10sp" />
 
     <Button
         android:id="@+id/button_clear"
@@ -32,9 +32,7 @@
     <TextView
         android:id="@+id/resultsTextView"
         android:layout_width="fill_parent"
-        android:background="#F0F0F0"
-        android:layout_height="wrap_content"
-        android:textColor="#000000" />
+        android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/pickFriendsButton"
@@ -63,12 +61,10 @@
 
     <ListView
         android:id="@+id/listView2"
-        android:layout_width="251dp"
+        android:layout_width="wrap_content"
         android:layout_height="244dp"
-        android:background="#F0F0F0"
         android:layout_margin="@dimen/activity_horizontal_margin"
-        android:layout_weight="0.56"
-        android:textColor="#000000" >
+        android:layout_weight="0.47" >
 
     </ListView>
 

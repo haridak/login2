@@ -10,7 +10,8 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class NotificationsActivity extends Activity {
+public class SearchResults extends Activity {
+
 	String[] prev_post_ids;
 	public static final List<String> ALL_PERMISSIONS = Arrays.asList(       
 			"read_friendlists",
@@ -26,7 +27,7 @@ public class NotificationsActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		setContentView(com.kalyani.login2.R.layout.notifications);
+		setContentView(com.kalyani.login2.R.layout.searchresults);
 	          Intent myintent = getIntent();
         String[] Array = myintent.getStringArrayExtra("string-array");
         
@@ -37,8 +38,6 @@ public class NotificationsActivity extends Activity {
         ListView answerslist = (ListView)findViewById(com.kalyani.login2.R.id.answers_listview);
         answerslist.setAdapter(adapter);
 	}
+
+
 }
-
-
-
-//select author_uid,message  from checkin where author_uid IN (select uid2 from friend where uid1 = me())
