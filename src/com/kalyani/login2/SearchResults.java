@@ -33,9 +33,9 @@ public class SearchResults extends Activity {
         
         List<String> stringList = new ArrayList<String>(Arrays.asList(Array)); 
 	    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
-        android.R.layout.activity_list_item, android.R.id.text1,stringList);
+        R.layout.mylist, android.R.id.text1,stringList);
 	    
-        ListView answerslist = (ListView)findViewById(com.kalyani.login2.R.id.answers_listview);
+        ListView answerslist = (ListView)findViewById(com.kalyani.login2.R.id.search_results_listview);
         answerslist.setAdapter(adapter);
 	}
 

@@ -2,20 +2,37 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:paddingTop="5sp" >
 
     <TextView
         android:id="@+id/textView1"
-        android:layout_width="wrap_content"
+        android:layout_width="302dp"
         android:layout_height="wrap_content"
-        android:text="Please select search criteria" />
+        android:text="Please Select a Search Criteria" />
 
     <CheckBox
-        android:id="@+id/movie_theatre"
+        android:id="@+id/attractions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onCheckboxClicked"
-        android:text="Movie Theatre"
+        android:text="Attractions/Things to Do"
+        android:textSize="12dp" />
+
+    <CheckBox
+        android:id="@+id/books"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Books"
+        android:onClick="onCheckboxClicked"
+        android:textSize="12dp" />
+
+    <CheckBox
+        android:id="@+id/hospitals"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hospitals/Clinic"
+        android:onClick="onCheckboxClicked"
         android:textSize="12dp" />
 
     <CheckBox
@@ -23,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onCheckboxClicked"
-        android:text="Restaurant"
+        android:text="Restaurant/Cafe"
         android:textSize="12dp" />
 
     <CheckBox
@@ -31,9 +48,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onCheckboxClicked"
-        android:text="Shopping"
+        android:text="Shopping/Retails"
         android:textSize="12dp" />
-     <CheckBox
+
+    <CheckBox
         android:id="@+id/selectloc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,16 +61,17 @@
 
     <ListView
         android:id="@+id/Searchlocation"
-        android:layout_width="match_parent"
-        android:layout_height="274dp"
+        android:layout_width="wrap_content"
+        android:layout_height="182dp"
         android:textSize="12dp" >
     </ListView>
 
     <Button
         android:id="@+id/search_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="Search" />
+        android:layout_width="92dp"
+        android:layout_height="46dp"
+        android:layout_gravity="center"
+        android:text="Search"
+        android:textSize="12dp" />
 
 </LinearLayout>

@@ -1,5 +1,7 @@
 package com.kalyani.login2;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,7 +12,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,9 +22,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -38,7 +40,6 @@ import com.facebook.model.GraphUser;
 
 
 public class SearchActivity extends Activity {
-
 
 	final Session.StatusCallback sessionStatusCallback = new Session.StatusCallback() {
 		@Override
@@ -58,22 +59,20 @@ public class SearchActivity extends Activity {
 			}
 		};
 	};
-
+	 ProgressDialog progress;
 	String results = "";
 	String post_id;
+	String s="abc";
+String fqlQuery = null;
 	ArrayList<String> prev_post_ids = new ArrayList<String>();
-	private EditText text;
 	int i=0;
 	ArrayList<String> stringArrayList_searchresults = new ArrayList<String>();
 	private List<String> tags = new ArrayList<String>();
-	private GraphUser user2;
 	String query;
 	ListView Searchlocation;
 	private static final int REAUTH_ACTIVITY_CODE = 100;
-	private PendingAction pendingAction = PendingAction.NONE;
 	private UiLifecycleHelper lifecycleHelper;
 	boolean pickFriendsWhenSessionOpened;
-	private boolean canPresentShareDialog=true;
 	ArrayList<String> prev_post_ids3;
 	ArrayAdapter<String> adapter;
 	ArrayList<String> stringArrayList = new ArrayList<String>();
@@ -81,7 +80,6 @@ public class SearchActivity extends Activity {
 	ArrayList<String> postIDs_temp = new ArrayList<String>();
 	ArrayList<String> stringArrayList_responses = new ArrayList<String>();
 	ArrayList<String> stringArrayList_names = new ArrayList<String>();
-	private static final String PERMISSION = "publish_actions";
 	public static final List<String> ALL_PERMISSIONS = Arrays.asList(       
 			"read_friendlists",
 			"offline_access",
@@ -94,11 +92,6 @@ public class SearchActivity extends Activity {
 	GraphPlace gp =null;
 	String message;
 	ListView listView1;
-	private enum PendingAction {
-		NONE,
-		POST_STATUS_UPDATE
-	}
-
 	private void makeMeRequest(final Session session) {
 		Log.i("TAG", "In makeMeRequest method");
 		Request request = Request.newMeRequest(session, 
@@ -110,7 +103,6 @@ public class SearchActivity extends Activity {
 				// If the response is successful
 				if (session == Session.getActiveSession()) {
 					if (user != null) {
-						user2 = user;
 						return;
 					}
 				}
@@ -188,10 +180,6 @@ public class SearchActivity extends Activity {
 	}
 
 
-	private interface GraphObjectWithId extends GraphObject {
-		String getId();
-	}
-
 	public final void displayFriendsLocation()
 	{
 		HashSet hs = new HashSet();
@@ -205,13 +193,32 @@ public class SearchActivity extends Activity {
 
 	}
 
-	public void userLikes(final Session session) {
-
+	public boolean userLikes(final Session session) {
+		if(ensureOpenSession())
+		{
 		Log.i("TAG", "userlikes");
-		String fqlQuery = "SELECT name from page WHERE page_id IN (SELECT page_id FROM page_fan WHERE uid IN (SELECT uid1, uid2 FROM friend WHERE uid1 = me()) AND type IN " +query + ") AND location.city = " + stringArrayList;
-		Log.i("fql query", fqlQuery);
+		stringArrayList_searchresults.clear();
 		Bundle params = new Bundle();
+	//	String fqlQuery = null;
+		Log.i("location value", s.toString());
+if(s.toString().contentEquals("abc"))
+{
+	fqlQuery = "SELECT name from page WHERE page_id IN (SELECT page_id FROM page_fan WHERE uid IN (SELECT uid1, uid2 FROM friend WHERE uid1 = me()) AND type IN " +query + ");";
+	Log.i("fql query", fqlQuery);
+	//Bundle params = new Bundle();
+	params.putString("q", fqlQuery);
+}
+else
+{
+	fqlQuery = "SELECT name from page WHERE page_id IN (SELECT page_id FROM page_fan WHERE uid IN (SELECT uid1, uid2 FROM friend WHERE uid1 = me()) AND type IN " +query + ") AND location.city = " + s;
+		Log.i("fql query", fqlQuery);
+		//Bundle params = new Bundle();
 		params.putString("q", fqlQuery);
+		s="abc";
+	
+}
+		//Bundle params = new Bundle();
+		//params.putString("q", fqlQuery);
 		Request request = new Request(session,
 				"/fql",                         
 				params,                         
@@ -221,6 +228,7 @@ public class SearchActivity extends Activity {
 				//String location;
 				String name;
 				Log.i("userlikes", response.toString());
+				fqlQuery ="";
 				try
 				{
 
@@ -231,7 +239,14 @@ public class SearchActivity extends Activity {
 					{
 						name =arr.getJSONObject(k).getString("name");
 						Log.i("name", name);
+						if((name.contains("000")) || (name.contains("Smile")))
+						{
+							Log.i("tag","invalid page");
+						}
+						else
+						{
 						stringArrayList_searchresults.add(name);
+						}
 
 					}     
 				}
@@ -240,16 +255,32 @@ public class SearchActivity extends Activity {
 				{
 					t.printStackTrace();
 				}
+				HashSet hs = new HashSet();
+				hs.addAll(stringArrayList_searchresults);
+				stringArrayList_searchresults.clear();
+				stringArrayList_searchresults.addAll(hs);
+				Collections.sort(stringArrayList_searchresults);
+				
 			}  
 		}); 
-		Request.executeBatchAsync(request);                 
+		Request.executeBatchAsync(request);   
+		return true;
+	}
+		else
+		{
+			Log.i("tag", "session not active");
+					return false;
+		}
+	
 	}
 
-	public void FriendsLikesLocation(final Session session) {
 
-		Log.i("TAG", "userlikes");
-	//	String fqlQuery = "SELECT location from page WHERE page_id IN (SELECT page_id FROM page_fan WHERE uid IN (SELECT uid1, uid2 FROM friend WHERE uid1 = me()) AND type in );";
-		String fqlQuery = "SELECT location from page WHERE page_id IN (SELECT page_id FROM page_fan WHERE uid IN (SELECT uid1, uid2 FROM friend WHERE uid1 = me()) AND type IN ('SHOPPING AND RETAIL','ELECTRONICS','HOSPITAL','BOOK','RESTAURANT/CAFE','HOTEL','BAR'))";
+	public void FriendsLikesLocation(final Session session) {
+		//final ProgressDialog progress;
+
+		Log.i("TAG", "FriendsLikesLocation");
+	String fqlQuery = "SELECT location from page WHERE page_id IN (SELECT page_id FROM page_fan WHERE uid IN (SELECT uid1, uid2 FROM friend WHERE uid1 = me()))";
+		//String fqlQuery = "SELECT location from page WHERE page_id IN (SELECT page_id FROM page_fan WHERE uid IN (SELECT uid1, uid2 FROM friend WHERE uid1 = me()) AND type IN ('SHOPPING AND RETAIL','ELECTRONICS','HOSPITAL','BOOK','RESTAURANT/CAFE','HOTEL','BAR'))";
 		Log.i("fql query", fqlQuery);
 		Bundle params = new Bundle();
 		params.putString("q", fqlQuery);
@@ -304,6 +335,7 @@ public class SearchActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		FriendsLikesLocation(Session.getActiveSession());
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.search);
 		
@@ -329,7 +361,7 @@ public class SearchActivity extends Activity {
 					}
 					else
 					{
-						String s = Searchlocation.getItemAtPosition(position).toString();
+						 s = Searchlocation.getItemAtPosition(position).toString();
 						// int _listViewPostion = position;
 						Log.i(s, s);
 						Toast toast=Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT);
@@ -342,31 +374,114 @@ public class SearchActivity extends Activity {
 		
 		Search.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(View v)
-			{
-			
+			public void onClick(final View v)
+			{	
 				
-//				userLikes(Session.getActiveSession());  
-//				//FriendsLikesLocation(Session.getActiveSession());
-//				if(!(stringArrayList_searchresults.isEmpty()))
-//				{
-//					String[] stockArr = new String[stringArrayList_searchresults.size()];
-//					stockArr = stringArrayList_searchresults.toArray(stockArr);
-//					Log.i("TAG", "In onClick of previousanswer button");
-//					Intent intent = new Intent(v.getContext(),NotificationsActivity.class);
-//					intent.putExtra("string-array",stockArr);
-//					startActivityForResult(intent,0);
-//					Log.i("TAG", "In startActivityForResult of previousanswer button");
-//				}
-//				else
-//				{
-//					Log.i("TAG", "didnt start the notificationsactivity");
-//				}
+				progress = ProgressDialog.show(SearchActivity.this, "Searching", "Please Wait");
+			
+				if(ensureOpenSession())
+				{
+				Log.i("TAG", "userlikes");
+				stringArrayList_searchresults.clear();
+				Bundle params = new Bundle();
+			//	String fqlQuery = null;
+				Log.i("location value", s.toString());
+		if(s.toString().contentEquals("abc"))
+		{
+			fqlQuery = "SELECT name from page WHERE page_id IN (SELECT page_id FROM page_fan WHERE uid IN (SELECT uid1, uid2 FROM friend WHERE uid1 = me()) AND type IN " +query + ");";
+			Log.i("fql query", fqlQuery);
+			//Bundle params = new Bundle();
+			params.putString("q", fqlQuery);
+		}
+		else
+		{
+			fqlQuery = "SELECT name from page WHERE page_id IN (SELECT page_id FROM page_fan WHERE uid IN (SELECT uid1, uid2 FROM friend WHERE uid1 = me()) AND type IN " +query + ") " +
+					" AND location.city = " +"'" + s + "'";
+				Log.i("fql query", fqlQuery);
+				//Bundle params = new Bundle();
+				params.putString("q", fqlQuery);
+				s="abc";
+			
+		}
+				//Bundle params = new Bundle();
+				//params.putString("q", fqlQuery);
+				Request request = new Request(Session.getActiveSession(),
+						"/fql",                         
+						params,                         
+						HttpMethod.GET,                 
+						new Request.Callback(){         
+					public void onCompleted(Response response) {
+						//String location;
+						String name;
+						Log.i("userlikes", response.toString());
+						fqlQuery ="";
+						try
+						{
+
+							GraphObject go  = response.getGraphObject();
+							JSONObject  jso = go.getInnerJSONObject();
+							JSONArray   arr = jso.getJSONArray( "data" );
+							for(int k = 0;k < arr.length(); k++)
+							{
+								name =arr.getJSONObject(k).getString("name");
+								Log.i("name", name);
+								if((name.contains("000")) || (name.contains("Smile")))
+								{
+									Log.i("tag","invalid page");
+								}
+								else
+								{
+								stringArrayList_searchresults.add(name);
+								}
+
+							}     
+						}
+						//}
+						catch( Throwable t )
+						{
+							t.printStackTrace();
+						}
+						HashSet hs = new HashSet();
+						hs.addAll(stringArrayList_searchresults);
+						stringArrayList_searchresults.clear();
+						stringArrayList_searchresults.addAll(hs);
+						Collections.sort(stringArrayList_searchresults);
+
+						if(!(stringArrayList_searchresults.isEmpty()))
+						{
+							progress.dismiss();
+							String[] stockArr = new String[stringArrayList_searchresults.size()];
+							stockArr = stringArrayList_searchresults.toArray(stockArr);
+							Log.i("TAG", "In onClick of search results button");
+							Intent intent = new Intent(v.getContext(),NotificationsActivity.class);
+							intent.putExtra("string-array",stockArr);
+							startActivityForResult(intent,0);
+							Log.i("TAG", "In startActivityForResult of search results button");
+						}
+						else
+						{
+							progress.dismiss();
+							Toast.makeText(getApplicationContext(), "No search results found.", Toast.LENGTH_LONG).show();
+							Log.i("TAG", "didnt start the search results activity");
+						}
+						
+					}  
+				}); 
+				Request.executeBatchAsync(request);   
+			
+		
 
 			}
 
+			
+			else
+			{
+				Log.i("tag", "session not active");
+						
+			}
+			}
 		});
-
+		
 		lifecycleHelper = new UiLifecycleHelper(this, new Session.StatusCallback() {
 			@Override
 			public void call(Session session, SessionState state, Exception exception) {
@@ -379,6 +494,8 @@ public class SearchActivity extends Activity {
 		ensureOpenSession();
 		makeMeRequest(Session.getActiveSession());
 	}
+	
+	
 
 	public void onCheckboxClicked(View view) {
 		// Is the view now checked?
@@ -390,31 +507,59 @@ public class SearchActivity extends Activity {
 		case R.id.restaurant:
 			if (checked)
 				Log.i("tag", "restaurant checked");
-			query = "( 'RESTAURANT/CAFE', 'BAR', 'HOTEL')";
-			//FriendsLikesLocation(Session.getActiveSession());
+			query = "( 'CAFE','RESTAURANT','INDIAN RESTAURANT','RESTAURANT/CAFE', 'BAR', 'HOTEL','BUFFET RESTAURANT', 'ITALIAN RESTAURANT','MEXICAN RESTAURANT', 'CHINESE RESTAURANT','ASIAN FUSION RESTAURANT','ASIAN RESTAURANT','THAI RESTAURANT')";
 		
-			// Remove the meat
+		
 			break;
 		case R.id.shopping:
 			if (checked)
 				Log.i("tag", "shopping checked");
-			//FriendsLikesLocation(Session.getActiveSession());
-			
-			// I'm lactose intolerant
+			query = "( 'SHOPPING MALL','SHOPPING/RETAIL')";
+		
+		
 			break;
 		case R.id.selectloc:
 			if (checked)
 			{
 				Log.i("tag", "location checked");
-		
-			Searchlocation.setVisibility(View.VISIBLE);
+				if(stringArrayList.isEmpty())
+				{
+					Searchlocation.setVisibility(View.VISIBLE);
+				progress = ProgressDialog.show(SearchActivity.this, "Loading Locations", "Please Wait");
+				}
+				else
+				{
+					Searchlocation.setVisibility(View.VISIBLE);
+				}
 			break;
 			}
 			else
 				Searchlocation.setVisibility(View.INVISIBLE);
-			// I'm lactose intolerant
+			
 			break;
 		
+		case R.id.hospitals:
+			if (checked)
+				Log.i("tag", "hospitals checked");
+			query = "( 'HOSPITAL', 'CLINIC', 'HOSPITAL/CLINIC')";
+		
+		
+			break;
+		case R.id.attractions:
+			if (checked)
+				Log.i("tag", "things to do checked");
+			query = "( 'AMUSEMENT', 'AMUSEMENT PARK RIDE', 'ART GALLERY', 'BOWLING ALLEY', 'CASINO','CIRCUS','CONCERT VENUE','HIGHWAY','HISTORICAL PLACE','LANDMARK','MONUMENT','MUSEUM', 'ORCHESTRA', 'PERFORMANCE VENUE', 'PUBLIC SQUARE', 'RACE TRACK', 'RODEO', 'SOCIAL CLUB', 'SPORTS VENUE & STADIUM', 'STREET', 'SYMPHONY', 'THEATRE', 'THEME PARK', 'TICKET SALES', 'TOURIST ATTRACTION', 'PUBLIC PLACES & ATTRACTIONS','ATTRACTIONS/THINGS TO DO')";
+		
+		
+			break;
+		case R.id.books:
+			if (checked)
+				Log.i("tag", "books checked");
+			query = "( 'BOOK STORE', 'BOOK', 'BOOK SERIES')";
+		
+		
+			break;
+
 		}
 
 	}
@@ -426,10 +571,12 @@ public class SearchActivity extends Activity {
 		stringArrayList.clear();
 		stringArrayList.addAll(hs);
 		Collections.sort(stringArrayList);
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
-				android.R.layout.activity_list_item, android.R.id.text1,stringArrayList );
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.mylist, android.R.id.text1,stringArrayList );
+		progress.dismiss();
 		Searchlocation.setAdapter(adapter);
 	
 
 	}
+	
+	
 }

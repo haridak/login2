@@ -34,7 +34,6 @@ public class SelectionFragment extends Fragment {
 	    View view = inflater.inflate(R.layout.selection, 
 	            container, false);
 	    Button searchButton =(Button) view.findViewById(R.id.button2);
-	    FriendsLikesLocation(Session.getActiveSession());
 	 
 	    Button askButton=(Button) view.findViewById(R.id.button1);
 	    searchButton.setOnClickListener(new OnClickListener()
@@ -43,13 +42,8 @@ public class SelectionFragment extends Fragment {
             public void onClick(View v)
             {
             	Intent intent = new Intent(v.getContext(),SearchActivity.class);
-            	//String[] stockArr = new String[stringArrayList.size()];
-				//stockArr = stringArrayList.toArray(stockArr);
 				Log.i("TAG", "In onClick of Search My Network button");
-			//	intent.putExtra("string-array",stockArr);
 				startActivityForResult(intent,0);
-            	Log.i("TAG", "In startActivityForResult of Search My Network button");
-            
             } 
   }); 
 	    askButton.setOnClickListener(new OnClickListener()
@@ -66,48 +60,5 @@ public class SelectionFragment extends Fragment {
 	    return view;
 	}
 	
-	public void FriendsLikesLocation(final Session session) {
-
-		Log.i("TAG", "userlikes");
-		String fqlQuery = "SELECT location from page WHERE page_id IN (SELECT page_id FROM page_fan WHERE uid IN (SELECT uid1, uid2 FROM friend WHERE uid1 = me()));";
-		Log.i("fql query", fqlQuery);
-		Bundle params = new Bundle();
-		params.putString("q", fqlQuery);
-		Request request = new Request(session,
-				"/fql",                         
-				params,                         
-				HttpMethod.GET,                 
-				new Request.Callback(){         
-			public void onCompleted(Response response) {
-				//Log.i("locations", response.toString());
-				try
-				{
-					GraphObject go  = response.getGraphObject();
-					JSONObject  jso = go.getInnerJSONObject();
-					JSONArray   arr = jso.getJSONArray( "data" );
-					for(int i = 0;i < arr.length(); i++){
-						if(arr.getJSONObject(i).getJSONObject("location").isNull("city"))
-						{
-							//Log.i("tag","value is null");
-						}
-						else
-						{
-							String temp = arr.getJSONObject(i).getJSONObject("location").getString("city").toString();
-							Log.i("location", temp);
-							stringArrayList.add(temp);
-						}
-
-					}     
-				}
-				catch( Throwable t )
-				{
-					t.printStackTrace();
-				}
-			
-			}  
-		}); 
-		Request.executeBatchAsync(request); 
-		
-	}
 
 }
