@@ -978,9 +978,10 @@ public class AskActivity extends Activity  {
 					else
 					{
 						fbInfo1 = arr.getJSONObject(index3).getString("fromid");
+						fbInfo3 = arr.getJSONObject(index3).getString("post_id");
 						for(int index5=0;index5<=status_ids.size();index5++)
 						{
-							if(status_ids.get(index5).contentEquals(fbInfo1))
+							if(status_ids.get(index5).contentEquals(fbInfo1) && prev_post_ids.get(index5).contentEquals(fbInfo1))
 							{
 								stringArrayList_responses.add(postMessages.get(index5));
 								current_post_id=status_ids.get(index5);
@@ -990,14 +991,16 @@ public class AskActivity extends Activity  {
 
 							}
 
-							fbInfo3 = arr.getJSONObject(index3).getString("post_id");
+							
 							fbInfo2 = arr.getJSONObject(index3).getString("text");
 							Log.i("fbinfo", fbInfo2);
 							//String temp= fbInfo.substring("name").toString();
 							for(int index2=0;index2<=friends_uids.length;index2++)
 							{
+								
 								if(friends_uids[index2].contentEquals(fbInfo3) && current_post_id.contentEquals(fbInfo3))
 								{
+									
 									String temp1 = friends_firstnames[index2] + " says: " +fbInfo2;
 									stringArrayList_responses.add(temp1);
 									postIDs_temp.add(fbInfo3);
