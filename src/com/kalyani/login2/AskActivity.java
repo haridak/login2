@@ -954,9 +954,7 @@ public class AskActivity extends Activity  {
 			}
 			else
 			{
-
-			
-
+				String current_post_id ="abc";
 					
 				for(int index3 = 0;index3 < arr.length(); index3++){
 					// Log.i("TAG", "inside 1st for loop");
@@ -973,6 +971,7 @@ public class AskActivity extends Activity  {
 						if(status_ids.get(index5).contentEquals(fbInfo1))
 								{
 							stringArrayList_responses.add(postMessages.get(index5));
+							current_post_id=status_ids.get(index5);
 								}
 						else
 						{
@@ -985,7 +984,7 @@ public class AskActivity extends Activity  {
 						//String temp= fbInfo.substring("name").toString();
 						for(int index2=0;index2<=friends_uids.length;index2++)
 						{
-							if(friends_uids[index2]==fbInfo1)
+							if(friends_uids[index2].contentEquals(fbInfo3) && current_post_id.contentEquals(fbInfo3))
 							{
 								String temp1 = friends_firstnames[index2] + " says: " +fbInfo2;
 								stringArrayList_responses.add(temp1);
