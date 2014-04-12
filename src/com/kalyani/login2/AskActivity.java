@@ -95,6 +95,8 @@ public class AskActivity extends Activity  {
 	ArrayList<String> stringArrayList = new ArrayList<String>();
 	ArrayList<String> postMessages = new ArrayList<String>();
 	ArrayList<String> status_ids = new ArrayList<String>();
+	ArrayList<String> processing_post_ids_temp = new ArrayList<String>();
+	ArrayList<String> processing_post_ids = new ArrayList<String>();
 	ArrayList<String> postIDs_temp = new ArrayList<String>();
 	ArrayList<String> stringArrayList_responses = new ArrayList<String>();
 	ArrayList<String> stringArrayList_names = new ArrayList<String>();
@@ -172,6 +174,7 @@ public class AskActivity extends Activity  {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i("TAG", "in onCreate method");
+		getPostIDs(Session.getActiveSession());
 		//	List<String> tags = new ArrayList<String>();
 		//tags.add("1035192085");
 		getFirstName(Session.getActiveSession()); 
@@ -181,8 +184,17 @@ public class AskActivity extends Activity  {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ask);
 		//ViewMesssagesFromPostID(prev_post_ids);
-		//ViewResponses(prev_post_ids);
-
+		//ViewResponses(prev_post_ids);	
+		//Log.i("shared_preferences",sp.getAll().toString());
+		//processing_post_ids_temp.addAll((Collection<? extends String>) sp);
+		//for(String s: processing_post_ids_temp)
+		//{
+		//	int pos = s.lastIndexOf("=");
+		//	String substring =  s.substring(pos+1,s.length());
+		//	
+		//	processing_post_ids.add(substring);
+		//	Log.i("got the postid from sp", substring);
+		//}
 		//Button loginButton = (Button)findViewById(R.id.login_button);
 
 		text = (EditText) findViewById(R.id.editText1);
@@ -771,7 +783,7 @@ public class AskActivity extends Activity  {
 										Log.i("uid",friends_uids[index2]);
 										Log.i("fromid",fbInfo1);
 										if(friends_uids[index2].contentEquals(fbInfo1))
-											
+
 										{
 											Log.i("checking uid fromid uid:", friends_uids[index2]);
 											Log.i("checking uid fromid fromid:", fbInfo1);
@@ -955,7 +967,7 @@ public class AskActivity extends Activity  {
 			else
 			{
 				String current_post_id ="abc";
-					
+
 				for(int index3 = 0;index3 < arr.length(); index3++){
 					// Log.i("TAG", "inside 1st for loop");
 
@@ -968,33 +980,33 @@ public class AskActivity extends Activity  {
 						fbInfo1 = arr.getJSONObject(index3).getString("fromid");
 						for(int index5=0;index5<=status_ids.size();index5++)
 						{
-						if(status_ids.get(index5).contentEquals(fbInfo1))
-								{
-							stringArrayList_responses.add(postMessages.get(index5));
-							current_post_id=status_ids.get(index5);
-								}
-						else
-						{
-							
-						}
-						
-						fbInfo3 = arr.getJSONObject(index3).getString("post_id");
-						fbInfo2 = arr.getJSONObject(index3).getString("text");
-						Log.i("fbinfo", fbInfo2);
-						//String temp= fbInfo.substring("name").toString();
-						for(int index2=0;index2<=friends_uids.length;index2++)
-						{
-							if(friends_uids[index2].contentEquals(fbInfo3) && current_post_id.contentEquals(fbInfo3))
+							if(status_ids.get(index5).contentEquals(fbInfo1))
 							{
-								String temp1 = friends_firstnames[index2] + " says: " +fbInfo2;
-								stringArrayList_responses.add(temp1);
-								postIDs_temp.add(fbInfo3);
+								stringArrayList_responses.add(postMessages.get(index5));
+								current_post_id=status_ids.get(index5);
 							}
 							else
-								Log.i("tag", "fromid and uid dont match");
-						}
+							{
 
-					}
+							}
+
+							fbInfo3 = arr.getJSONObject(index3).getString("post_id");
+							fbInfo2 = arr.getJSONObject(index3).getString("text");
+							Log.i("fbinfo", fbInfo2);
+							//String temp= fbInfo.substring("name").toString();
+							for(int index2=0;index2<=friends_uids.length;index2++)
+							{
+								if(friends_uids[index2].contentEquals(fbInfo3) && current_post_id.contentEquals(fbInfo3))
+								{
+									String temp1 = friends_firstnames[index2] + " says: " +fbInfo2;
+									stringArrayList_responses.add(temp1);
+									postIDs_temp.add(fbInfo3);
+								}
+								else
+									Log.i("tag", "fromid and uid dont match");
+							}
+
+						}
 					}
 
 				}       
@@ -1181,5 +1193,40 @@ public class AskActivity extends Activity  {
 		return;  
 	}
 
+	public void getPostIDs(Session session)
+	{
 
+
+		Log.i("TAG", "onClick of friendsloc");
+		String fqlQuery = "select status_id from status where source ='491327477645562' AND uid=me()";
+		Bundle params = new Bundle();
+		params.putString("q", fqlQuery);
+		Request request = new Request(session,
+				"/fql",                         
+				params,                         
+				HttpMethod.GET,                 
+				new Request.Callback(){         
+			public void onCompleted(Response response) {
+				//Log.i("TAG", "post_ids_from_app: " + response.toString());
+				try
+				{
+					GraphObject go  = response.getGraphObject();
+					JSONObject  jso = go.getInnerJSONObject();
+					JSONArray   arr = jso.getJSONArray( "data" );
+					for(int index8=0;index8<arr.length();index8++)
+					{
+						String post_id1 = arr.getJSONObject(index8).get("status_id").toString();
+						Log.i("got postid", post_id1);
+						processing_post_ids.add(post_id1);
+					}
+					prev_post_ids.addAll(processing_post_ids);
+				}       
+				catch( Throwable t )
+				{
+					t.printStackTrace();
+				}
+			}  
+		}); 
+		Request.executeBatchAsync(request);                 
+	}
 }
