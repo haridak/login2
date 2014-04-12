@@ -733,8 +733,8 @@ public class AskActivity extends Activity  {
 
 	public void ViewResponses(ArrayList<String> prev_post_ids2)
 	{
-		prev_post_ids2.add("10202533463151228");
-		prev_post_ids2.add("10202533466631315");
+		//prev_post_ids2.add("10202533463151228");
+		//prev_post_ids2.add("10202533466631315");
 
 		//ViewMesssagesFromPostID(prev_post_ids);
 		StringBuilder builder = new StringBuilder();
@@ -765,17 +765,22 @@ public class AskActivity extends Activity  {
 						}
 						else
 						{
+							
 							String s = postMessages.get(index4);
 							stringArrayList_responses.add(s);
 							for(int i = 0;i < arr.length(); i++){
 								// Log.i("TAG", "inside 1st for loop");
-
-								if((arr.getJSONObject(i).isNull("text")))
+								int index_condition2=status_ids.size();
+								String fbInfo3 = arr.getJSONObject(i).getString("post_id");
+								for(int index9=0;index9<index_condition2;index9++)
 								{
-									Log.i("tag","value is null");
-								}
-								else
-								{
+									if(fbInfo3.contentEquals(status_ids.get(index9)))
+									{
+										stringArrayList_responses.add(postMessages.get(index9));
+										index9=index_condition2;
+									}
+								
+								
 									int index_condition=friends_uids.length;
 									String fbInfo1 = arr.getJSONObject(i).getString("fromid");
 									for(int index2=0;index2<index_condition;index2++)
@@ -788,11 +793,12 @@ public class AskActivity extends Activity  {
 											Log.i("checking uid fromid uid:", friends_uids[index2]);
 											Log.i("checking uid fromid fromid:", fbInfo1);
 											index_condition=index2;
-											String fbInfo3 = arr.getJSONObject(i).getString("post_id");
+											
 											String fbInfo2 = arr.getJSONObject(i).getString("text");
 											String temp1 = friends_firstnames[index2] + " says: " +fbInfo2;
 											stringArrayList_responses.add(temp1);
 											postIDs_temp.add(fbInfo3);
+											
 										}
 										else
 											Log.i("tag", "fromid and uid dont match");
@@ -801,9 +807,7 @@ public class AskActivity extends Activity  {
 
 							}
 
-
-						}       
-
+						}    
 					}
 
 					catch ( Throwable t )
@@ -814,7 +818,7 @@ public class AskActivity extends Activity  {
 					index4++;
 					if(!(stringArrayList_responses.isEmpty()))
 					{
-						progress.dismiss();
+						
 
 						String[] stockArr = new String[stringArrayList_responses.size()];
 						stockArr = stringArrayList_responses.toArray(stockArr);
@@ -822,6 +826,7 @@ public class AskActivity extends Activity  {
 						//Intent intent2 = new Intent()
 						Intent intent = new Intent(getBaseContext(),NotificationsActivity.class);
 						intent.putExtra("string-array",stockArr);
+						progress.dismiss();
 						startActivityForResult(intent,0);
 						Log.i("TAG", "In startActivityForResult of previousanswer button");
 					}
@@ -843,8 +848,8 @@ public class AskActivity extends Activity  {
 	{
 
 
-		prev_post_ids4.add("10202533463151228");
-		prev_post_ids4.add("10202533466631315");
+		//prev_post_ids4.add("10202533463151228");
+		//prev_post_ids4.add("10202533466631315");
 
 		for( String s : prev_post_ids4) {
 
