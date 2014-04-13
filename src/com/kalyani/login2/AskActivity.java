@@ -98,6 +98,7 @@ public class AskActivity extends Activity  {
 	ArrayList<String> processing_post_ids_temp = new ArrayList<String>();
 	ArrayList<String> processing_post_ids = new ArrayList<String>();
 	ArrayList<String> postIDs_temp = new ArrayList<String>();
+	ArrayList<String> inserted_postids = new ArrayList<String>();
 	ArrayList<String> stringArrayList_responses = new ArrayList<String>();
 	ArrayList<String> stringArrayList_names = new ArrayList<String>();
 	private static final String PERMISSION = "publish_actions";
@@ -265,7 +266,7 @@ public class AskActivity extends Activity  {
 			public void onClick(View v)
 			{
 				progress = ProgressDialog.show(AskActivity.this, "Searching", "Please Wait");
-				ViewMesssagesFromPostID(prev_post_ids);
+				ViewResponses(prev_post_ids);
 				//ViewResponses(prev_post_ids,v);
 				//				if(!(stringArrayList_responses.isEmpty()))
 				//				{
@@ -739,9 +740,12 @@ public class AskActivity extends Activity  {
 		//ViewMesssagesFromPostID(prev_post_ids);
 		StringBuilder builder = new StringBuilder();
 		builder.append("(");
-		for( String s : prev_post_ids2) {
+		String post_ids_array = prev_post_ids.toString();
+		post_ids_array= post_ids_array.replace("[", "(");
+		post_ids_array= post_ids_array.replace("]", ")");
+		//for( String s : prev_post_ids2) {
 			String fqlQuery = 
-					"SELECT fromid, post_id, text FROM comment where post_id  = " + "'"+s +"';";
+					"SELECT fromid, post_id, text, id FROM comment where post_id  IN " +post_ids_array ;
 			Log.i("fql query", fqlQuery);
 			Bundle params = new Bundle();
 			params.putString("q", fqlQuery);
@@ -766,50 +770,65 @@ public class AskActivity extends Activity  {
 						else
 						{
 							
-							String s = postMessages.get(index4);
-							stringArrayList_responses.add(s);
-							for(int i = 0;i < arr.length(); i++){
+							for(int i=0;i<arr.length();i++)
 								// Log.i("TAG", "inside 1st for loop");
-								int index_condition2=status_ids.size();
-								String fbInfo3 = arr.getJSONObject(i).getString("post_id");
-								for(int index9=0;index9<index_condition2;index9++)
-								{
-									if(fbInfo3.contentEquals(status_ids.get(index9)))
-									{
-										stringArrayList_responses.add(postMessages.get(index9));
-										index9=index_condition2;
-									}
-								
-								
-									int index_condition=friends_uids.length;
-									String fbInfo1 = arr.getJSONObject(i).getString("fromid");
-									for(int index2=0;index2<index_condition;index2++)
-									{
-										Log.i("uid",friends_uids[index2]);
-										Log.i("fromid",fbInfo1);
-										if(friends_uids[index2].contentEquals(fbInfo1))
 
+							{
+								
+								String comment_id2 ="abc";
+								
+								String post_id = arr.getJSONObject(i).getString("post_id").toString();
+								String fromid = arr.getJSONObject(i).getString("fromid").toString();
+								String comment_text = arr.getJSONObject(i).getString("text").toString();
+								String comment_id = arr.getJSONObject(i).getString("id").toString();
+											//String comment_text_name = friends_firstnames[index2] + " says: " +comment_text;
+									if(!(comment_id2.toString().equalsIgnoreCase(comment_id)))
+											{
+										if(inserted_postids.contains(post_id))
 										{
-											Log.i("checking uid fromid uid:", friends_uids[index2]);
-											Log.i("checking uid fromid fromid:", fbInfo1);
-											index_condition=index2;
-											
-											String fbInfo2 = arr.getJSONObject(i).getString("text");
-											String temp1 = friends_firstnames[index2] + " says: " +fbInfo2;
-											stringArrayList_responses.add(temp1);
-											postIDs_temp.add(fbInfo3);
+											Log.i("postid","already inserted");
+										}
+										else {
+											for(int j=0;j<status_ids.size();j++)
+											{
+											if(status_ids.get(j).equalsIgnoreCase(post_id))
+											{
+											stringArrayList_responses.add(postMessages.get(j));
+											inserted_postids.add(post_id);
+											}
+											}
+										}
+										int k_condition =friends_uids.length;
+										for(int k=0; k<k_condition;k++)
+										{
+											if(friends_uids[k].contentEquals(fromid))
+											{
+												String temp1 =  friends_firstnames[k]  +" says: " +comment_text;
+												stringArrayList_responses.add(temp1);
+												postIDs_temp.add(post_id);
+												comment_id2=comment_id; 
+												k_condition=k;
+												
+											}
+											else
+											{
+												Log.i("" , fromid);
+												Log.i("", friends_uids[k]);
+											}
+										}
+									
+											}
+									else
+									{
+										Log.i("comment exists", "comment already exists");
+									}
 											
 										}
-										else
-											Log.i("tag", "fromid and uid dont match");
-									}
-								}  
-
-							}
-
-						}    
+							
+						}
+		
 					}
-
+				
 					catch ( Throwable t )
 					{
 						t.printStackTrace();
@@ -840,195 +859,195 @@ public class AskActivity extends Activity  {
 
 			}); 
 			Request.executeBatchAsync(request);  
-		}
+		//}
 
 
 	}
-	public void ViewMesssagesFromPostID(ArrayList<String> prev_post_ids4)
-	{
+//	public void ViewMesssagesFromPostID(ArrayList<String> prev_post_ids4)
+//	{
+//
+//
+//		//prev_post_ids4.add("10202533463151228");
+//		//prev_post_ids4.add("10202533466631315");
+//
+//		for( String s : prev_post_ids4) {
+//
+//			if(s.isEmpty())
+//			{
+//				Log.i("tag", " the post id in viewresponses is empty");
+//
+//			}
+//			else
+//			{
+//				String fqlQuery = 
+//						"SELECT status_id, message FROM status where status_id  = " + "'"+s +"';";
+//				Log.i("fql query", fqlQuery);
+//				Bundle params = new Bundle();
+//				params.putString("q", fqlQuery);
+//				Session session = Session.getActiveSession();
+//				Request request = new Request(session,
+//						"/fql",                         
+//						params,                         
+//						HttpMethod.GET,                 
+//						new Request.Callback(){         
+//					public void onCompleted(Response response) {
+//						Log.i("ViewMesssagesFromPostID", "Result: " + response.toString());
+//						//parseViewMesssagesFromPostID(response);
+//						String fbInfo3;
+//						String statusid;
+//
+//						try
+//						{
+//							GraphObject go  = response.getGraphObject();
+//							JSONObject  jso = go.getInnerJSONObject();
+//							JSONArray   arr = jso.getJSONArray( "data" );
+//							for(int i = 0;i < arr.length(); i++){
+//								// Log.i("TAG", "inside 1st for loop");
+//
+//								if((arr.getJSONObject(i).isNull("message")))
+//								{
+//									Log.i("tag","value is null");
+//								}
+//								else
+//								{
+//									fbInfo3 = arr.getJSONObject(i).getString("message");
+//									statusid =arr.getJSONObject(i).getString("status_id");
+//									Log.i("fbinfo", fbInfo3);
+//									//String temp= fbInfo.substring("name").toString();
+//									postMessages.add(fbInfo3);
+//									status_ids.add(statusid);
+//								}
+//
+//							}       
+//						}
+//
+//						catch ( Throwable t )
+//						{
+//							t.printStackTrace();
+//						}
+//						ViewResponses(prev_post_ids);
+//					}                  
+//				}); 
+//				Request.executeBatchAsync(request);  
+//			}
+//
+//		}
+//	}
 
 
-		//prev_post_ids4.add("10202533463151228");
-		//prev_post_ids4.add("10202533466631315");
-
-		for( String s : prev_post_ids4) {
-
-			if(s.isEmpty())
-			{
-				Log.i("tag", " the post id in viewresponses is empty");
-
-			}
-			else
-			{
-				String fqlQuery = 
-						"SELECT status_id, message FROM status where status_id  = " + "'"+s +"';";
-				Log.i("fql query", fqlQuery);
-				Bundle params = new Bundle();
-				params.putString("q", fqlQuery);
-				Session session = Session.getActiveSession();
-				Request request = new Request(session,
-						"/fql",                         
-						params,                         
-						HttpMethod.GET,                 
-						new Request.Callback(){         
-					public void onCompleted(Response response) {
-						Log.i("ViewMesssagesFromPostID", "Result: " + response.toString());
-						//parseViewMesssagesFromPostID(response);
-						String fbInfo3;
-						String statusid;
-
-						try
-						{
-							GraphObject go  = response.getGraphObject();
-							JSONObject  jso = go.getInnerJSONObject();
-							JSONArray   arr = jso.getJSONArray( "data" );
-							for(int i = 0;i < arr.length(); i++){
-								// Log.i("TAG", "inside 1st for loop");
-
-								if((arr.getJSONObject(i).isNull("message")))
-								{
-									Log.i("tag","value is null");
-								}
-								else
-								{
-									fbInfo3 = arr.getJSONObject(i).getString("message");
-									statusid =arr.getJSONObject(i).getString("status_id");
-									Log.i("fbinfo", fbInfo3);
-									//String temp= fbInfo.substring("name").toString();
-									postMessages.add(fbInfo3);
-									status_ids.add(statusid);
-								}
-
-							}       
-						}
-
-						catch ( Throwable t )
-						{
-							t.printStackTrace();
-						}
-						ViewResponses(prev_post_ids);
-					}                  
-				}); 
-				Request.executeBatchAsync(request);  
-			}
-
-		}
-	}
+//	public void parseViewMesssagesFromPostID(Response response)
+//	{
+//
+//		String fbInfo3;
+//
+//		try
+//		{
+//			GraphObject go  = response.getGraphObject();
+//			JSONObject  jso = go.getInnerJSONObject();
+//			JSONArray   arr = jso.getJSONArray( "data" );
+//			for(int i = 0;i < arr.length(); i++){
+//				// Log.i("TAG", "inside 1st for loop");
+//
+//				if((arr.getJSONObject(i).isNull("message")))
+//				{
+//					Log.i("tag","value is null");
+//				}
+//				else
+//				{
+//					fbInfo3 = arr.getJSONObject(i).getString("message");
+//
+//					Log.i("fbinfo", fbInfo3);
+//					//String temp= fbInfo.substring("name").toString();
+//					postMessages.add(fbInfo3);
+//
+//
+//				}
+//			}       
+//		}
+//
+//		catch ( Throwable t )
+//		{
+//			t.printStackTrace();
+//		}
+//
+//	}
 
 
-	public void parseViewMesssagesFromPostID(Response response)
-	{
-
-		String fbInfo3;
-
-		try
-		{
-			GraphObject go  = response.getGraphObject();
-			JSONObject  jso = go.getInnerJSONObject();
-			JSONArray   arr = jso.getJSONArray( "data" );
-			for(int i = 0;i < arr.length(); i++){
-				// Log.i("TAG", "inside 1st for loop");
-
-				if((arr.getJSONObject(i).isNull("message")))
-				{
-					Log.i("tag","value is null");
-				}
-				else
-				{
-					fbInfo3 = arr.getJSONObject(i).getString("message");
-
-					Log.i("fbinfo", fbInfo3);
-					//String temp= fbInfo.substring("name").toString();
-					postMessages.add(fbInfo3);
-
-
-				}
-			}       
-		}
-
-		catch ( Throwable t )
-		{
-			t.printStackTrace();
-		}
-
-	}
-
-
-	public ArrayList<String>  parseAnswersFQLResponse(Response response)
-	{
-		String fbInfo1;
-		String fbInfo2;
-		String fbInfo3;
-
-		try
-		{
-			GraphObject go  = response.getGraphObject();
-			JSONObject  jso = go.getInnerJSONObject();
-			JSONArray   arr = jso.getJSONArray( "data" );
-			if(postIDs_temp.containsAll(prev_post_ids))
-			{
-				Log.i("tag","the post id already exists");
-			}
-			else
-			{
-				String current_post_id ="abc";
-
-				for(int index3 = 0;index3 < arr.length(); index3++){
-					// Log.i("TAG", "inside 1st for loop");
-
-					if((arr.getJSONObject(index3).isNull("text")))
-					{
-						Log.i("tag","value is null");
-					}
-					else
-					{
-						fbInfo1 = arr.getJSONObject(index3).getString("fromid");
-						fbInfo3 = arr.getJSONObject(index3).getString("post_id");
-						for(int index5=0;index5<=status_ids.size();index5++)
-						{
-							if(status_ids.get(index5).contentEquals(fbInfo1) && prev_post_ids.get(index5).contentEquals(fbInfo1))
-							{
-								stringArrayList_responses.add(postMessages.get(index5));
-								current_post_id=status_ids.get(index5);
-							}
-							else
-							{
-
-							}
-
-							
-							fbInfo2 = arr.getJSONObject(index3).getString("text");
-							Log.i("fbinfo", fbInfo2);
-							//String temp= fbInfo.substring("name").toString();
-							for(int index2=0;index2<=friends_uids.length;index2++)
-							{
-								
-								if(friends_uids[index2].contentEquals(fbInfo3) && current_post_id.contentEquals(fbInfo3))
-								{
-									
-									String temp1 = friends_firstnames[index2] + " says: " +fbInfo2;
-									stringArrayList_responses.add(temp1);
-									postIDs_temp.add(fbInfo3);
-								}
-								else
-									Log.i("tag", "fromid and uid dont match");
-							}
-
-						}
-					}
-
-				}       
-
-			}
-
-		}
-		catch ( Throwable t )
-		{
-			t.printStackTrace();
-		}
-		return stringArrayList_responses;
-
-	}
+//	public ArrayList<String>  parseAnswersFQLResponse(Response response)
+//	{
+//		String fbInfo1;
+//		String fbInfo2;
+//		String fbInfo3;
+//
+//		try
+//		{
+//			GraphObject go  = response.getGraphObject();
+//			JSONObject  jso = go.getInnerJSONObject();
+//			JSONArray   arr = jso.getJSONArray( "data" );
+//			if(postIDs_temp.containsAll(prev_post_ids))
+//			{
+//				Log.i("tag","the post id already exists");
+//			}
+//			else
+//			{
+//				String current_post_id ="abc";
+//
+//				for(int index3 = 0;index3 < arr.length(); index3++){
+//					// Log.i("TAG", "inside 1st for loop");
+//
+//					if((arr.getJSONObject(index3).isNull("text")))
+//					{
+//						Log.i("tag","value is null");
+//					}
+//					else
+//					{
+//						fbInfo1 = arr.getJSONObject(index3).getString("fromid");
+//						fbInfo3 = arr.getJSONObject(index3).getString("post_id");
+//						for(int index5=0;index5<=status_ids.size();index5++)
+//						{
+//							if(status_ids.get(index5).contentEquals(fbInfo1) && prev_post_ids.get(index5).contentEquals(fbInfo1))
+//							{
+//								stringArrayList_responses.add(postMessages.get(index5));
+//								current_post_id=status_ids.get(index5);
+//							}
+//							else
+//							{
+//
+//							}
+//
+//							
+//							fbInfo2 = arr.getJSONObject(index3).getString("text");
+//							Log.i("fbinfo", fbInfo2);
+//							//String temp= fbInfo.substring("name").toString();
+//							for(int index2=0;index2<=friends_uids.length;index2++)
+//							{
+//								
+//								if(friends_uids[index2].contentEquals(fbInfo3) && current_post_id.contentEquals(fbInfo3))
+//								{
+//									
+//									String temp1 = friends_firstnames[index2] + " says: " +fbInfo2;
+//									stringArrayList_responses.add(temp1);
+//									postIDs_temp.add(fbInfo3);
+//								}
+//								else
+//									Log.i("tag", "fromid and uid dont match");
+//							}
+//
+//						}
+//					}
+//
+//				}       
+//
+//			}
+//
+//		}
+//		catch ( Throwable t )
+//		{
+//			t.printStackTrace();
+//		}
+//		return stringArrayList_responses;
+//
+//	}
 
 
 	public void getFirstName(final Session session) 
@@ -1055,6 +1074,7 @@ public class AskActivity extends Activity  {
 					{
 						friends_uids[index]= (String) arr.getJSONObject(index).get("uid").toString();
 						friends_firstnames[index]= (String) arr.getJSONObject(index).get("first_name").toString();
+					Log.i("friend_uid",friends_uids[index].toString());
 
 					}
 
@@ -1206,7 +1226,7 @@ public class AskActivity extends Activity  {
 
 
 		Log.i("TAG", "onClick of friendsloc");
-		String fqlQuery = "select status_id from status where source ='491327477645562' AND uid=me()";
+		String fqlQuery = "select status_id,message from status where source ='491327477645562' AND uid=me()";
 		Bundle params = new Bundle();
 		params.putString("q", fqlQuery);
 		Request request = new Request(session,
@@ -1224,8 +1244,11 @@ public class AskActivity extends Activity  {
 					for(int index8=0;index8<arr.length();index8++)
 					{
 						String post_id1 = arr.getJSONObject(index8).get("status_id").toString();
+						String message_id1 = arr.getJSONObject(index8).get("message").toString();
 						Log.i("got postid", post_id1);
 						processing_post_ids.add(post_id1);
+						postMessages.add(message_id1);
+						status_ids.add(post_id1);
 					}
 					prev_post_ids.addAll(processing_post_ids);
 				}       
