@@ -37,14 +37,14 @@ public class NotificationsActivity extends Activity {
         ListView answerslist = (ListView)findViewById(com.kalyani.login2.R.id.answers_listview);
         answerslist.setAdapter(adapter);
 	}
-	public void onBackPressed()  
-	{  
-	    //do whatever you want the 'Back' button to do  
-	    //as an example the 'Back' button is set to start a new Activity named 'NewActivity'  
-	    this.startActivity(new Intent(NotificationsActivity.this,AskActivity.class));  
-
-	    return;  
-	}
+//	public void onBackPressed()  
+//	{  
+//	    //do whatever you want the 'Back' button to do  
+//	    //as an example the 'Back' button is set to start a new Activity named 'NewActivity'  
+//	    this.startActivity(new Intent(NotificationsActivity.this,AskActivity.class));  
+//
+//	    return;  
+//	}
 }
 
 

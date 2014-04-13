@@ -254,6 +254,8 @@ public class AskActivity extends Activity  {
 			public void onClick(View v) {
 				tags.clear();
 				text.setText("");
+				stringArrayList.clear();
+				stringArrayList.add("");
 				resultsTextView.setText("");
 
 			}
@@ -305,7 +307,7 @@ public class AskActivity extends Activity  {
 						HttpMethod.GET,                 
 						new Request.Callback(){         
 					public void onCompleted(Response response) {
-						Log.i("TAG", "Result: " + response.toString());
+						//Log.i("TAG", "Result: " + response.toString());
 						parseFQLResponse(response);
 					}                  
 				}); 
@@ -1225,7 +1227,7 @@ public class AskActivity extends Activity  {
 	{
 
 
-		Log.i("TAG", "onClick of friendsloc");
+		Log.i("TAG", " in getPostIDs");
 		String fqlQuery = "select status_id,message from status where source ='491327477645562' AND uid=me()";
 		Bundle params = new Bundle();
 		params.putString("q", fqlQuery);
