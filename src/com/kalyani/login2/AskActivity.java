@@ -180,7 +180,10 @@ public class AskActivity extends Activity  {
 		//tags.add("1035192085");
 		getFirstName(Session.getActiveSession()); 
 		makeMeRequest(Session.getActiveSession());
+		if(request_permissions(Session.getActiveSession()))
 		getCurrentUserLocation(Session.getActiveSession()); 
+		else
+			Log.i("Log about session","session not active or permissions werent granted");
 		//userLikes(Session.getActiveSession()); 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ask);
@@ -246,6 +249,7 @@ public class AskActivity extends Activity  {
 					Toast toast=Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT);
 					toast.show();
 					getFriends(s);
+					s ="";
 				}
 			} } );
 		Button clear =(Button) findViewById(R.id.button_clear);
@@ -253,10 +257,10 @@ public class AskActivity extends Activity  {
 			@Override
 			public void onClick(View v) {
 				tags.clear();
-				text.setText("");
-				stringArrayList.clear();
-				stringArrayList.add("");
-				resultsTextView.setText("");
+				text.setText(" ");
+				//stringArrayList.clear();
+				//stringArrayList.add(" ");
+				resultsTextView.setText(" ");
 
 			}
 		});
@@ -349,6 +353,20 @@ public class AskActivity extends Activity  {
 		ensureOpenSession();
 		canPresentShareDialog = FacebookDialog.canPresentShareDialog(this,
 				FacebookDialog.ShareDialogFeature.SHARE_DIALOG);
+	}
+	public boolean request_permissions(Session session)
+	{
+		if (session != null) {
+			Log.i("TAG", "session != null of requestPublishPermissions");
+			//session.openForPublish(new Session.OpenRequest(this).setPermissions(ALL_PERMISSIONS));
+			Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(this, ALL_PERMISSIONS)
+			.setDefaultAudience(SessionDefaultAudience.ONLY_ME)
+			.setRequestCode(REAUTH_ACTIVITY_CODE);
+			session.requestNewPublishPermissions(newPermissionsRequest);
+		return true;
+	}
+		else
+			return false;
 	}
 
 	@Override
@@ -500,6 +518,8 @@ public class AskActivity extends Activity  {
 			pendingAction = action;
 			handlePendingAction();
 		}
+		tags.clear();
+		resultsTextView.setText(" ");
 	}
 	private boolean hasPublishPermission() {
 		Log.i("TAG", "In hasPublishPermission");
@@ -609,6 +629,9 @@ public class AskActivity extends Activity  {
 		.show();
 		Log.i("post_id", substring);
 		//ViewResponses(prev_post_ids);
+		tags.clear();
+		resultsTextView.setText(" ");
+		
 	}
 	private interface GraphObjectWithId extends GraphObject {
 		String getId();
