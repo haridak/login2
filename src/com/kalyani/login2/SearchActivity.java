@@ -450,11 +450,11 @@ else
 						if(!(stringArrayList_searchresults.isEmpty()))
 						{
 							progress.dismiss();
-							String[] stockArr = new String[stringArrayList_searchresults.size()];
-							stockArr = stringArrayList_searchresults.toArray(stockArr);
+							String[] SearchResults = new String[stringArrayList_searchresults.size()];
+							SearchResults = stringArrayList_searchresults.toArray(SearchResults);
 							Log.i("TAG", "In onClick of search results button");
-							Intent intent = new Intent(v.getContext(),NotificationsActivity.class);
-							intent.putExtra("string-array",stockArr);
+							Intent intent = new Intent(v.getContext(),SearchResults.class);
+							intent.putExtra("string-array",SearchResults);
 							startActivityForResult(intent,0);
 							Log.i("TAG", "In startActivityForResult of search results button");
 						}
@@ -571,7 +571,7 @@ else
 		stringArrayList.clear();
 		stringArrayList.addAll(hs);
 		Collections.sort(stringArrayList);
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.mylist, android.R.id.text1,stringArrayList );
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.mylist, android.R.id.text1,stringArrayList);
 		progress.dismiss();
 		Searchlocation.setAdapter(adapter);
 	

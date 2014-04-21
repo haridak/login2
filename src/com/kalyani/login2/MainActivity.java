@@ -9,7 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-
+import com.newrelic.agent.android.NewRelic;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
@@ -35,6 +35,9 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i("TAG", "in oncreate");
+		//NewRelic.withApplicationToken(
+			//	"AA0cf056e648ebefba80734ee5c8ad03fa8ff85fd4"
+				//).start(this.getApplication());
 	    super.onCreate(savedInstanceState);
 	    uiHelper = new UiLifecycleHelper(this, callback);
 	    uiHelper = new UiLifecycleHelper(this, callback);
@@ -195,6 +198,13 @@ public class MainActivity extends FragmentActivity {
 	    }
 	    return false;
 	}
+	public void onBackPressed() {
+		   Log.i("HA", "Finishing");
+		   Intent intent = new Intent(Intent.ACTION_MAIN);
+		   intent.addCategory(Intent.CATEGORY_HOME);
+		   intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		   startActivity(intent);
+		 }
 }
 //added for auth ends here
 

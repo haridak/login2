@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -50,7 +51,7 @@ import com.facebook.widget.FacebookDialog;
 
 
 public class AskActivity extends Activity  {
-
+	
 	final Session.StatusCallback sessionStatusCallback = new Session.StatusCallback() {
 		@Override
 		public void call(final Session session, SessionState state, Exception exception) {
@@ -83,6 +84,7 @@ public class AskActivity extends Activity  {
 	int index4=0;
 	String respondant_firstname;
 	private List<String> tags = new ArrayList<String>();
+	private List<String> names2 = new ArrayList<String>();
 	private GraphUser user2;
 	private static final int REAUTH_ACTIVITY_CODE = 100;
 	private PendingAction pendingAction = PendingAction.NONE;
@@ -92,6 +94,8 @@ public class AskActivity extends Activity  {
 	ArrayList<String> prev_post_ids3;
 	String[] friends_firstnames = new String[300];
 	String[] friends_uids=  new String[300];
+	String[] forloc_friends_firstnames = new String[300];
+	String[] forloc_friends_uids=  new String[300];
 	ArrayList<String> stringArrayList = new ArrayList<String>();
 	ArrayList<String> postMessages = new ArrayList<String>();
 	ArrayList<String> status_ids = new ArrayList<String>();
@@ -101,6 +105,7 @@ public class AskActivity extends Activity  {
 	ArrayList<String> inserted_postids = new ArrayList<String>();
 	ArrayList<String> stringArrayList_responses = new ArrayList<String>();
 	ArrayList<String> stringArrayList_names = new ArrayList<String>();
+	ArrayList<String> stringArrayList_names2 = new ArrayList<String>();
 	private static final String PERMISSION = "publish_actions";
 	public static final List<String> ALL_PERMISSIONS = Arrays.asList(       
 			"read_friendlists",
@@ -114,6 +119,8 @@ public class AskActivity extends Activity  {
 	GraphPlace gp =null;
 	String message;
 	ListView listView1;
+	ListView listView_friends;
+
 	private enum PendingAction {
 		NONE,
 		POST_STATUS_UPDATE
@@ -181,7 +188,7 @@ public class AskActivity extends Activity  {
 		getFirstName(Session.getActiveSession()); 
 		makeMeRequest(Session.getActiveSession());
 		if(request_permissions(Session.getActiveSession()))
-		getCurrentUserLocation(Session.getActiveSession()); 
+			getCurrentUserLocation(Session.getActiveSession()); 
 		else
 			Log.i("Log about session","session not active or permissions werent granted");
 		//userLikes(Session.getActiveSession()); 
@@ -228,9 +235,48 @@ public class AskActivity extends Activity  {
 		//Collections.sort(stringArrayList);
 		//ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
 		//      android.R.layout.activity_list_item, android.R.id.text1,stringArrayList );
+		this.listView_friends = (ListView)findViewById(R.id.listView3);
+		listView_friends.setVisibility(View.INVISIBLE);
 		this.listView1 = (ListView)findViewById(R.id.listView2);
 		//  listView1.setAdapter(adapter);
+		listView_friends.setOnItemClickListener(new OnItemClickListener()
+		{
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
 
+				listView_friends.getItemAtPosition(position);
+
+				if ((listView_friends.getItemAtPosition(position)) == null) {
+					Log.v("TextView", "Null");
+				}
+				else
+				{
+					
+					int asd_condition = stringArrayList_names2.size();
+					String s = listView_friends.getItemAtPosition(position).toString();					
+					for(int asd =0;asd<asd_condition ;asd++)
+					{
+						Log.i("Clicked", s);
+						Log.i("xyz", forloc_friends_firstnames[asd]);
+						if(s.contentEquals((forloc_friends_firstnames[asd])))
+						{
+							names2.add(forloc_friends_firstnames[asd]);
+							tags.add(forloc_friends_uids[asd]);
+							asd=asd_condition;
+						}
+						else
+						{
+							Log.i("getting name based on location", "name didnt match");
+						}
+						results = TextUtils.join(", ", names2);	
+						resultsTextView.setText(results);
+					}
+				}
+			}
+
+
+		});
 		listView1.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
@@ -249,7 +295,7 @@ public class AskActivity extends Activity  {
 					Toast toast=Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT);
 					toast.show();
 					getFriends(s);
-					s ="";
+
 				}
 			} } );
 		Button clear =(Button) findViewById(R.id.button_clear);
@@ -272,7 +318,26 @@ public class AskActivity extends Activity  {
 			public void onClick(View v)
 			{
 				progress = ProgressDialog.show(AskActivity.this, "Searching", "Please Wait");
-				ViewResponses(prev_post_ids);
+				
+				if(!(stringArrayList_responses.isEmpty()))
+				{
+
+					String[] stockArr = new String[stringArrayList_responses.size()];
+					stockArr = stringArrayList_responses.toArray(stockArr);
+					Log.i("TAG", "In onClick of previousanswer button");
+					Intent intent = new Intent(getBaseContext(),NotificationsActivity.class);
+					intent.putExtra("string-array",stockArr);
+					progress.dismiss();
+					startActivityForResult(intent,0);
+					Log.i("TAG", "In startActivityForResult of previousanswer button");
+				}
+				else
+				{
+					ViewResponses(prev_post_ids);
+				}
+
+			//	getPostIDs(Session.getActiveSession());
+				
 				//ViewResponses(prev_post_ids,v);
 				//				if(!(stringArrayList_responses.isEmpty()))
 				//				{
@@ -299,6 +364,9 @@ public class AskActivity extends Activity  {
 		friendsloc.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				listView_friends.setVisibility(View.VISIBLE);
+				listView1.setVisibility(View.VISIBLE);
+				progress = ProgressDialog.show(AskActivity.this, "Loading", "Please Wait");
 				Log.i("TAG", "onClick of friendsloc");
 				String fqlQuery = "SELECT current_location FROM user WHERE uid IN " +
 						"(SELECT uid2 FROM friend WHERE uid1 = me())";
@@ -363,8 +431,8 @@ public class AskActivity extends Activity  {
 			.setDefaultAudience(SessionDefaultAudience.ONLY_ME)
 			.setRequestCode(REAUTH_ACTIVITY_CODE);
 			session.requestNewPublishPermissions(newPermissionsRequest);
-		return true;
-	}
+			return true;
+		}
 		else
 			return false;
 	}
@@ -375,13 +443,20 @@ public class AskActivity extends Activity  {
 		super.onStart();
 		// Update the display every time we are started.
 		displaySelectedFriends(RESULT_OK);
+		//resultsTextView.setText(" ");
+		listView_friends.setVisibility(View.INVISIBLE);
+		listView1.setVisibility(View.INVISIBLE);
 	}
 
 	@Override
 	protected void onResume() {
 		Log.i("TAG", "in onResume");
 		super.onResume();
+		//resultsTextView.setText(" ");
+		listView_friends.setVisibility(View.INVISIBLE);
+		listView1.setVisibility(View.INVISIBLE);
 		AppEventsLogger.activateApp(this);
+
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -631,7 +706,7 @@ public class AskActivity extends Activity  {
 		//ViewResponses(prev_post_ids);
 		tags.clear();
 		resultsTextView.setText(" ");
-		
+
 	}
 	private interface GraphObjectWithId extends GraphObject {
 		String getId();
@@ -688,14 +763,17 @@ public class AskActivity extends Activity  {
 		stringArrayList.addAll(hs);
 		Collections.sort(stringArrayList);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
-				android.R.layout.activity_list_item, android.R.id.text1,stringArrayList );
-
+				R.layout.mylist, android.R.id.text1,stringArrayList );
+		progress.dismiss();
 		listView1.setAdapter(adapter);
 
 	}
 
 	public void getFriends(String city) {
 		Log.i("TAG", "onClick of friendsloc");
+		results ="";
+		names2.clear();
+		tags.clear();
 		String fqlQuery = "SELECT uid, name FROM user WHERE uid IN (SELECT uid2 FROM friend WHERE uid1 = me()) AND current_location.city='"+city+"'"; ;
 		Bundle params = new Bundle();
 		params.putString("q", fqlQuery);
@@ -717,13 +795,17 @@ public class AskActivity extends Activity  {
 	{
 		String fbInfo;
 		String fbInfo_UID;
+		forloc_friends_firstnames = new String[300];
+		forloc_friends_uids = new String[300];
 
+		stringArrayList_names2 = new ArrayList<String>();
 		try
 		{
 			GraphObject go  = response.getGraphObject();
 			JSONObject  jso = go.getInnerJSONObject();
 			JSONArray   arr = jso.getJSONArray( "data" );
-			for(int i = 0;i < arr.length(); i++){
+			//int j=0;
+			for(int i = 0;i< arr.length(); i++){
 				// Log.i("TAG", "inside 1st for loop");
 
 				//if((arr.getJSONObject(i).isNull("uid")))
@@ -735,17 +817,29 @@ public class AskActivity extends Activity  {
 				fbInfo_UID = arr.getJSONObject(i).getString("uid");
 				fbInfo = arr.getJSONObject(i).getString("name");
 				Log.i("fbinfo", fbInfo);
+				forloc_friends_firstnames[i]=fbInfo;
+				forloc_friends_uids[i]= fbInfo_UID;
 				//String temp= fbInfo.substring("name").toString();
-				stringArrayList_names.add(fbInfo);
-				results = TextUtils.join(", ", stringArrayList_names);
-				resultsTextView.setText(results);
-				tags.add(fbInfo_UID);
+				stringArrayList_names2.add(fbInfo);
+				//	results = TextUtils.join(", ", stringArrayList_names);
+				//resultsTextView.setText(results);
+				//tags.add(fbInfo_UID);
 
 
 				//              		}
 
 
 			}
+			HashSet hs2 = new HashSet();
+			hs2.addAll(stringArrayList_names2);
+			stringArrayList_names2.clear();
+			stringArrayList_names2.addAll(hs2);
+			Collections.sort(stringArrayList_names2);
+
+			ArrayAdapter<String> friends_adapter = new ArrayAdapter<String>(this, 
+					R.layout.mylist, android.R.id.text1,stringArrayList_names2);
+
+			this.listView_friends.setAdapter(friends_adapter);
 		}
 
 		catch ( Throwable t )
@@ -761,7 +855,7 @@ public class AskActivity extends Activity  {
 	{
 		//prev_post_ids2.add("10202533463151228");
 		//prev_post_ids2.add("10202533466631315");
-
+		//stringArrayList_responses.clear();
 		//ViewMesssagesFromPostID(prev_post_ids);
 		StringBuilder builder = new StringBuilder();
 		builder.append("(");
@@ -769,310 +863,310 @@ public class AskActivity extends Activity  {
 		post_ids_array= post_ids_array.replace("[", "(");
 		post_ids_array= post_ids_array.replace("]", ")");
 		//for( String s : prev_post_ids2) {
-			String fqlQuery = 
-					"SELECT fromid, post_id, text, id FROM comment where post_id  IN " +post_ids_array ;
-			Log.i("fql query", fqlQuery);
-			Bundle params = new Bundle();
-			params.putString("q", fqlQuery);
-			Session session = Session.getActiveSession();
-			Request request = new Request(session,
-					"/fql",                         
-					params,                         
-					HttpMethod.GET,                 
-					new Request.Callback(){         
-				public void onCompleted(Response response) {
-					Log.i("responses_data", "Result: " + response.toString());
-					//parseAnswersFQLResponse(response);
-					try
+		String fqlQuery = 
+				"SELECT fromid, post_id, text, id FROM comment where post_id  IN " +post_ids_array ;
+		Log.i("fql query", fqlQuery);
+		Bundle params = new Bundle();
+		params.putString("q", fqlQuery);
+		Session session = Session.getActiveSession();
+		Request request = new Request(session,
+				"/fql",                         
+				params,                         
+				HttpMethod.GET,                 
+				new Request.Callback(){         
+			public void onCompleted(Response response) {
+				Log.i("responses_data", "Result: " + response.toString());
+				//parseAnswersFQLResponse(response);
+				try
+				{
+					GraphObject go  = response.getGraphObject();
+					JSONObject  jso = go.getInnerJSONObject();
+					JSONArray   arr = jso.getJSONArray( "data" );
+					if(postIDs_temp.containsAll(prev_post_ids))
 					{
-						GraphObject go  = response.getGraphObject();
-						JSONObject  jso = go.getInnerJSONObject();
-						JSONArray   arr = jso.getJSONArray( "data" );
-						if(postIDs_temp.containsAll(prev_post_ids))
-						{
-							Log.i("tag","the post id already exists");
-						}
-						else
-						{
-							
-							for(int i=0;i<arr.length();i++)
-								// Log.i("TAG", "inside 1st for loop");
-
-							{
-								
-								String comment_id2 ="abc";
-								
-								String post_id = arr.getJSONObject(i).getString("post_id").toString();
-								String fromid = arr.getJSONObject(i).getString("fromid").toString();
-								String comment_text = arr.getJSONObject(i).getString("text").toString();
-								String comment_id = arr.getJSONObject(i).getString("id").toString();
-											//String comment_text_name = friends_firstnames[index2] + " says: " +comment_text;
-									if(!(comment_id2.toString().equalsIgnoreCase(comment_id)))
-											{
-										if(inserted_postids.contains(post_id))
-										{
-											Log.i("postid","already inserted");
-										}
-										else {
-											for(int j=0;j<status_ids.size();j++)
-											{
-											if(status_ids.get(j).equalsIgnoreCase(post_id))
-											{
-											stringArrayList_responses.add(postMessages.get(j));
-											inserted_postids.add(post_id);
-											}
-											}
-										}
-										int k_condition =friends_uids.length;
-										for(int k=0; k<k_condition;k++)
-										{
-											if(friends_uids[k].contentEquals(fromid))
-											{
-												String temp1 =  friends_firstnames[k]  +" says: " +comment_text;
-												stringArrayList_responses.add(temp1);
-												postIDs_temp.add(post_id);
-												comment_id2=comment_id; 
-												k_condition=k;
-												
-											}
-											else
-											{
-												Log.i("" , fromid);
-												Log.i("", friends_uids[k]);
-											}
-										}
-									
-											}
-									else
-									{
-										Log.i("comment exists", "comment already exists");
-									}
-											
-										}
-							
-						}
-		
-					}
-				
-					catch ( Throwable t )
-					{
-						t.printStackTrace();
-					}
-
-					index4++;
-					if(!(stringArrayList_responses.isEmpty()))
-					{
-						
-
-						String[] stockArr = new String[stringArrayList_responses.size()];
-						stockArr = stringArrayList_responses.toArray(stockArr);
-						Log.i("TAG", "In onClick of previousanswer button");
-						//Intent intent2 = new Intent()
-						Intent intent = new Intent(getBaseContext(),NotificationsActivity.class);
-						intent.putExtra("string-array",stockArr);
-						progress.dismiss();
-						startActivityForResult(intent,0);
-						Log.i("TAG", "In startActivityForResult of previousanswer button");
+						Log.i("tag","the post id already exists");
 					}
 					else
 					{
-						progress.dismiss();
-						Toast.makeText(getApplicationContext(), "No responses available.", Toast.LENGTH_SHORT).show();
-						Log.i("TAG", "didnt start the notificationsactivity");
+
+						for(int i=0;i<arr.length();i++)
+							// Log.i("TAG", "inside 1st for loop");
+
+						{
+
+							String comment_id2 ="abc";
+
+							String post_id = arr.getJSONObject(i).getString("post_id").toString();
+							String fromid = arr.getJSONObject(i).getString("fromid").toString();
+							String comment_text = arr.getJSONObject(i).getString("text").toString();
+							String comment_id = arr.getJSONObject(i).getString("id").toString();
+							//String comment_text_name = friends_firstnames[index2] + " says: " +comment_text;
+							if(!(comment_id2.toString().equalsIgnoreCase(comment_id)))
+							{
+								if(inserted_postids.contains(post_id))
+								{
+									Log.i("postid","already inserted");
+								}
+								else {
+									for(int j=0;j<status_ids.size();j++)
+									{
+										if(status_ids.get(j).equalsIgnoreCase(post_id))
+										{
+											stringArrayList_responses.add(postMessages.get(j));
+											inserted_postids.add(post_id);
+										}
+									}
+								}
+								int k_condition =friends_uids.length;
+								for(int k=0; k<k_condition;k++)
+								{
+									if(friends_uids[k].contentEquals(fromid))
+									{
+										String temp1 =  friends_firstnames[k]  +" says: " +comment_text;
+										stringArrayList_responses.add(temp1);
+										postIDs_temp.add(post_id);
+										comment_id2=comment_id; 
+										k_condition=k;
+
+									}
+									else
+									{
+										Log.i("" , fromid);
+										Log.i("", friends_uids[k]);
+									}
+								}
+
+							}
+							else
+							{
+								Log.i("comment exists", "comment already exists");
+							}
+
+						}
+
 					}
+
 				}
 
-			}); 
-			Request.executeBatchAsync(request);  
+				catch ( Throwable t )
+				{
+					t.printStackTrace();
+				}
+
+				index4++;
+				if(!(stringArrayList_responses.isEmpty()))
+				{
+
+
+					String[] stockArr = new String[stringArrayList_responses.size()];
+					stockArr = stringArrayList_responses.toArray(stockArr);
+					Log.i("TAG", "In onClick of previousanswer button");
+					//Intent intent2 = new Intent()
+					Intent intent = new Intent(getBaseContext(),NotificationsActivity.class);
+					intent.putExtra("string-array",stockArr);
+					progress.dismiss();
+					startActivityForResult(intent,0);
+					Log.i("TAG", "In startActivityForResult of previousanswer button");
+				}
+				else
+				{
+					progress.dismiss();
+					Toast.makeText(getApplicationContext(), "No responses available.", Toast.LENGTH_SHORT).show();
+					Log.i("TAG", "didnt start the notificationsactivity");
+				}
+			}
+
+		}); 
+		Request.executeBatchAsync(request);  
 		//}
 
 
 	}
-//	public void ViewMesssagesFromPostID(ArrayList<String> prev_post_ids4)
-//	{
-//
-//
-//		//prev_post_ids4.add("10202533463151228");
-//		//prev_post_ids4.add("10202533466631315");
-//
-//		for( String s : prev_post_ids4) {
-//
-//			if(s.isEmpty())
-//			{
-//				Log.i("tag", " the post id in viewresponses is empty");
-//
-//			}
-//			else
-//			{
-//				String fqlQuery = 
-//						"SELECT status_id, message FROM status where status_id  = " + "'"+s +"';";
-//				Log.i("fql query", fqlQuery);
-//				Bundle params = new Bundle();
-//				params.putString("q", fqlQuery);
-//				Session session = Session.getActiveSession();
-//				Request request = new Request(session,
-//						"/fql",                         
-//						params,                         
-//						HttpMethod.GET,                 
-//						new Request.Callback(){         
-//					public void onCompleted(Response response) {
-//						Log.i("ViewMesssagesFromPostID", "Result: " + response.toString());
-//						//parseViewMesssagesFromPostID(response);
-//						String fbInfo3;
-//						String statusid;
-//
-//						try
-//						{
-//							GraphObject go  = response.getGraphObject();
-//							JSONObject  jso = go.getInnerJSONObject();
-//							JSONArray   arr = jso.getJSONArray( "data" );
-//							for(int i = 0;i < arr.length(); i++){
-//								// Log.i("TAG", "inside 1st for loop");
-//
-//								if((arr.getJSONObject(i).isNull("message")))
-//								{
-//									Log.i("tag","value is null");
-//								}
-//								else
-//								{
-//									fbInfo3 = arr.getJSONObject(i).getString("message");
-//									statusid =arr.getJSONObject(i).getString("status_id");
-//									Log.i("fbinfo", fbInfo3);
-//									//String temp= fbInfo.substring("name").toString();
-//									postMessages.add(fbInfo3);
-//									status_ids.add(statusid);
-//								}
-//
-//							}       
-//						}
-//
-//						catch ( Throwable t )
-//						{
-//							t.printStackTrace();
-//						}
-//						ViewResponses(prev_post_ids);
-//					}                  
-//				}); 
-//				Request.executeBatchAsync(request);  
-//			}
-//
-//		}
-//	}
+	//	public void ViewMesssagesFromPostID(ArrayList<String> prev_post_ids4)
+	//	{
+	//
+	//
+	//		//prev_post_ids4.add("10202533463151228");
+	//		//prev_post_ids4.add("10202533466631315");
+	//
+	//		for( String s : prev_post_ids4) {
+	//
+	//			if(s.isEmpty())
+	//			{
+	//				Log.i("tag", " the post id in viewresponses is empty");
+	//
+	//			}
+	//			else
+	//			{
+	//				String fqlQuery = 
+	//						"SELECT status_id, message FROM status where status_id  = " + "'"+s +"';";
+	//				Log.i("fql query", fqlQuery);
+	//				Bundle params = new Bundle();
+	//				params.putString("q", fqlQuery);
+	//				Session session = Session.getActiveSession();
+	//				Request request = new Request(session,
+	//						"/fql",                         
+	//						params,                         
+	//						HttpMethod.GET,                 
+	//						new Request.Callback(){         
+	//					public void onCompleted(Response response) {
+	//						Log.i("ViewMesssagesFromPostID", "Result: " + response.toString());
+	//						//parseViewMesssagesFromPostID(response);
+	//						String fbInfo3;
+	//						String statusid;
+	//
+	//						try
+	//						{
+	//							GraphObject go  = response.getGraphObject();
+	//							JSONObject  jso = go.getInnerJSONObject();
+	//							JSONArray   arr = jso.getJSONArray( "data" );
+	//							for(int i = 0;i < arr.length(); i++){
+	//								// Log.i("TAG", "inside 1st for loop");
+	//
+	//								if((arr.getJSONObject(i).isNull("message")))
+	//								{
+	//									Log.i("tag","value is null");
+	//								}
+	//								else
+	//								{
+	//									fbInfo3 = arr.getJSONObject(i).getString("message");
+	//									statusid =arr.getJSONObject(i).getString("status_id");
+	//									Log.i("fbinfo", fbInfo3);
+	//									//String temp= fbInfo.substring("name").toString();
+	//									postMessages.add(fbInfo3);
+	//									status_ids.add(statusid);
+	//								}
+	//
+	//							}       
+	//						}
+	//
+	//						catch ( Throwable t )
+	//						{
+	//							t.printStackTrace();
+	//						}
+	//						ViewResponses(prev_post_ids);
+	//					}                  
+	//				}); 
+	//				Request.executeBatchAsync(request);  
+	//			}
+	//
+	//		}
+	//	}
 
 
-//	public void parseViewMesssagesFromPostID(Response response)
-//	{
-//
-//		String fbInfo3;
-//
-//		try
-//		{
-//			GraphObject go  = response.getGraphObject();
-//			JSONObject  jso = go.getInnerJSONObject();
-//			JSONArray   arr = jso.getJSONArray( "data" );
-//			for(int i = 0;i < arr.length(); i++){
-//				// Log.i("TAG", "inside 1st for loop");
-//
-//				if((arr.getJSONObject(i).isNull("message")))
-//				{
-//					Log.i("tag","value is null");
-//				}
-//				else
-//				{
-//					fbInfo3 = arr.getJSONObject(i).getString("message");
-//
-//					Log.i("fbinfo", fbInfo3);
-//					//String temp= fbInfo.substring("name").toString();
-//					postMessages.add(fbInfo3);
-//
-//
-//				}
-//			}       
-//		}
-//
-//		catch ( Throwable t )
-//		{
-//			t.printStackTrace();
-//		}
-//
-//	}
+	//	public void parseViewMesssagesFromPostID(Response response)
+	//	{
+	//
+	//		String fbInfo3;
+	//
+	//		try
+	//		{
+	//			GraphObject go  = response.getGraphObject();
+	//			JSONObject  jso = go.getInnerJSONObject();
+	//			JSONArray   arr = jso.getJSONArray( "data" );
+	//			for(int i = 0;i < arr.length(); i++){
+	//				// Log.i("TAG", "inside 1st for loop");
+	//
+	//				if((arr.getJSONObject(i).isNull("message")))
+	//				{
+	//					Log.i("tag","value is null");
+	//				}
+	//				else
+	//				{
+	//					fbInfo3 = arr.getJSONObject(i).getString("message");
+	//
+	//					Log.i("fbinfo", fbInfo3);
+	//					//String temp= fbInfo.substring("name").toString();
+	//					postMessages.add(fbInfo3);
+	//
+	//
+	//				}
+	//			}       
+	//		}
+	//
+	//		catch ( Throwable t )
+	//		{
+	//			t.printStackTrace();
+	//		}
+	//
+	//	}
 
 
-//	public ArrayList<String>  parseAnswersFQLResponse(Response response)
-//	{
-//		String fbInfo1;
-//		String fbInfo2;
-//		String fbInfo3;
-//
-//		try
-//		{
-//			GraphObject go  = response.getGraphObject();
-//			JSONObject  jso = go.getInnerJSONObject();
-//			JSONArray   arr = jso.getJSONArray( "data" );
-//			if(postIDs_temp.containsAll(prev_post_ids))
-//			{
-//				Log.i("tag","the post id already exists");
-//			}
-//			else
-//			{
-//				String current_post_id ="abc";
-//
-//				for(int index3 = 0;index3 < arr.length(); index3++){
-//					// Log.i("TAG", "inside 1st for loop");
-//
-//					if((arr.getJSONObject(index3).isNull("text")))
-//					{
-//						Log.i("tag","value is null");
-//					}
-//					else
-//					{
-//						fbInfo1 = arr.getJSONObject(index3).getString("fromid");
-//						fbInfo3 = arr.getJSONObject(index3).getString("post_id");
-//						for(int index5=0;index5<=status_ids.size();index5++)
-//						{
-//							if(status_ids.get(index5).contentEquals(fbInfo1) && prev_post_ids.get(index5).contentEquals(fbInfo1))
-//							{
-//								stringArrayList_responses.add(postMessages.get(index5));
-//								current_post_id=status_ids.get(index5);
-//							}
-//							else
-//							{
-//
-//							}
-//
-//							
-//							fbInfo2 = arr.getJSONObject(index3).getString("text");
-//							Log.i("fbinfo", fbInfo2);
-//							//String temp= fbInfo.substring("name").toString();
-//							for(int index2=0;index2<=friends_uids.length;index2++)
-//							{
-//								
-//								if(friends_uids[index2].contentEquals(fbInfo3) && current_post_id.contentEquals(fbInfo3))
-//								{
-//									
-//									String temp1 = friends_firstnames[index2] + " says: " +fbInfo2;
-//									stringArrayList_responses.add(temp1);
-//									postIDs_temp.add(fbInfo3);
-//								}
-//								else
-//									Log.i("tag", "fromid and uid dont match");
-//							}
-//
-//						}
-//					}
-//
-//				}       
-//
-//			}
-//
-//		}
-//		catch ( Throwable t )
-//		{
-//			t.printStackTrace();
-//		}
-//		return stringArrayList_responses;
-//
-//	}
+	//	public ArrayList<String>  parseAnswersFQLResponse(Response response)
+	//	{
+	//		String fbInfo1;
+	//		String fbInfo2;
+	//		String fbInfo3;
+	//
+	//		try
+	//		{
+	//			GraphObject go  = response.getGraphObject();
+	//			JSONObject  jso = go.getInnerJSONObject();
+	//			JSONArray   arr = jso.getJSONArray( "data" );
+	//			if(postIDs_temp.containsAll(prev_post_ids))
+	//			{
+	//				Log.i("tag","the post id already exists");
+	//			}
+	//			else
+	//			{
+	//				String current_post_id ="abc";
+	//
+	//				for(int index3 = 0;index3 < arr.length(); index3++){
+	//					// Log.i("TAG", "inside 1st for loop");
+	//
+	//					if((arr.getJSONObject(index3).isNull("text")))
+	//					{
+	//						Log.i("tag","value is null");
+	//					}
+	//					else
+	//					{
+	//						fbInfo1 = arr.getJSONObject(index3).getString("fromid");
+	//						fbInfo3 = arr.getJSONObject(index3).getString("post_id");
+	//						for(int index5=0;index5<=status_ids.size();index5++)
+	//						{
+	//							if(status_ids.get(index5).contentEquals(fbInfo1) && prev_post_ids.get(index5).contentEquals(fbInfo1))
+	//							{
+	//								stringArrayList_responses.add(postMessages.get(index5));
+	//								current_post_id=status_ids.get(index5);
+	//							}
+	//							else
+	//							{
+	//
+	//							}
+	//
+	//							
+	//							fbInfo2 = arr.getJSONObject(index3).getString("text");
+	//							Log.i("fbinfo", fbInfo2);
+	//							//String temp= fbInfo.substring("name").toString();
+	//							for(int index2=0;index2<=friends_uids.length;index2++)
+	//							{
+	//								
+	//								if(friends_uids[index2].contentEquals(fbInfo3) && current_post_id.contentEquals(fbInfo3))
+	//								{
+	//									
+	//									String temp1 = friends_firstnames[index2] + " says: " +fbInfo2;
+	//									stringArrayList_responses.add(temp1);
+	//									postIDs_temp.add(fbInfo3);
+	//								}
+	//								else
+	//									Log.i("tag", "fromid and uid dont match");
+	//							}
+	//
+	//						}
+	//					}
+	//
+	//				}       
+	//
+	//			}
+	//
+	//		}
+	//		catch ( Throwable t )
+	//		{
+	//			t.printStackTrace();
+	//		}
+	//		return stringArrayList_responses;
+	//
+	//	}
 
 
 	public void getFirstName(final Session session) 
@@ -1099,7 +1193,7 @@ public class AskActivity extends Activity  {
 					{
 						friends_uids[index]= (String) arr.getJSONObject(index).get("uid").toString();
 						friends_firstnames[index]= (String) arr.getJSONObject(index).get("first_name").toString();
-					Log.i("friend_uid",friends_uids[index].toString());
+						Log.i("friend_uid",friends_uids[index].toString());
 
 					}
 
@@ -1237,14 +1331,14 @@ public class AskActivity extends Activity  {
 
 	//SELECT name,location from page where page_id IN (SELECT reviewee_id,rating FROM review WHERE reviewee_id IN (SELECT page_id, name from page WHERE page_id IN (SELECT page_id FROM page_fan WHERE uid IN (SELECT uid1, uid2 FROM friend WHERE uid1 = me())) AND type IN ('FOOD/BEVERAGES','BAKERY','RESTAURANT/CAFE')));
 
-	public void onBackPressed()  
-	{  
-		//do whatever you want the 'Back' button to do  
-		//as an example the 'Back' button is set to start a new Activity named 'NewActivity'  
-		this.startActivity(new Intent(AskActivity.this,MainActivity.class));  
-
-		return;  
-	}
+//	public void onBackPressed()  
+//	{  
+//		//do whatever you want the 'Back' button to do  
+//		//as an example the 'Back' button is set to start a new Activity named 'NewActivity'  
+//		this.startActivity(new Intent(AskActivity.this,MainActivity.class));  
+//
+//		return;  
+//	}
 
 	public void getPostIDs(Session session)
 	{
@@ -1285,4 +1379,5 @@ public class AskActivity extends Activity  {
 		}); 
 		Request.executeBatchAsync(request);                 
 	}
+	
 }

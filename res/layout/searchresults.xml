@@ -7,7 +7,10 @@
     <ListView
         android:id="@+id/search_results_listview"
         android:layout_width="wrap_content"
-        android:layout_height="452dp" >
+        android:layout_height="452dp"
+        android:layout_margin="5sp"
+        android:background="@drawable/button_border" >
+
     </ListView>
 
 </LinearLayout>
